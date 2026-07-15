@@ -3,196 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бүртгүүлэх | devnmd</title>
+    <title>Нэвтрэх | devnmd</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background-color: #08080c;
+            background-color: #050508;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px 0;
         }
-        .form-container {
+        .card {
             background: rgba(15, 15, 25, 0.6);
             border: 1px solid rgba(138, 43, 226, 0.2);
             border-radius: 20px;
-            padding: 35px;
+            padding: 40px;
+            text-align: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 360px;
             box-shadow: 0 0 30px rgba(138, 43, 226, 0.15);
             box-sizing: border-box;
         }
-        h2 { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            background: linear-gradient(45deg, #a12be2, #ff007f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
+        h2 { margin-bottom: 15px; color: #a12be2;}
+        p { color: #888; font-size: 14px; margin-bottom: 25px; line-height: 1.5;}
+        .group { margin-bottom: 15px; }
+        input {
+            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px;
+            color: #fff; box-sizing: border-box; text-align: center; font-size: 16px;
         }
-        .input-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            font-size: 12px;
-            margin-bottom: 6px;
-            color: #8a8a9e;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            color: white;
-            box-sizing: border-box;
-            transition: 0.2s;
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #a12be2;
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 10px rgba(161, 43, 226, 0.2);
-        }
+        input:focus { outline: none; border-color: #a12be2; }
         button {
-            width: 100%;
-            padding: 14px;
-            background: #a12be2;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(161, 43, 226, 0.3);
+            width: 100%; padding: 12px; background: #a12be2; border: none;
+            color: white; font-weight: bold; border-radius: 10px;
+            cursor: pointer; font-size: 16px; transition: 0.2s;
         }
-        button:hover { 
-            background: #b33ff3; 
-            transform: translateY(-2px);
-        }
-        button:disabled {
-            background: #444;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .error-msg { 
-            color: #ff4d6a; 
-            font-size: 13px; 
-            margin-top: 10px; 
-            text-align: center; 
-            font-weight: 500;
-        }
+        button:hover { background: #b33ff3; }
+        .status { color: #ff416c; font-size: 13px; margin-top: 15px; font-weight: bold;}
     </style>
 </head>
 <body>
 
-    <div class="form-container">
-        <h2>Шинэ хаяг нээх</h2>
-        <form id="registerForm">
-            <div class="input-group">
-                <label>Username (Жишээ нь: devnmd)</label>
-                <input type="text" id="username" required placeholder="Зөвхөн жижиг англи үсэг, тоо">
-            </div>
-            <div class="input-group">
-                <label>Бүтэн нэр</label>
-                <input type="text" id="name" required placeholder="Таны нэр">
-            </div>
-            <div class="input-group">
-                <label>Bio (Товч танилцуулга)</label>
-                <textarea id="bio" rows="3" placeholder="Өөрийгөө товч танилцуулна уу"></textarea>
-            </div>
-            <div class="input-group">
-                <label>Профайл зургийн линк (URL)</label>
-                <input type="url" id="avatar" placeholder="https://image-link.com/avatar.jpg">
-            </div>
-            <div class="input-group">
-                <label>Discord (Нэмэлт)</label>
-                <input type="text" id="discord" placeholder="username#0000">
-            </div>
-            <div class="input-group">
-                <label>Instagram (Нэмэлт)</label>
-                <input type="text" id="instagram" placeholder="insta_handle">
-            </div>
-            <div class="input-group">
-                <label>GitHub (Нэмэлт)</label>
-                <input type="text" id="github" placeholder="github_handle">
-            </div>
-            <button type="submit" id="submitBtn">Хуудсаа үүсгэх</button>
-            <div id="error" class="error-msg"></div>
-        </form>
+    <div class="card">
+        <h2>devnmd-д нэвтрэх</h2>
+        <p>Өөрийн имэйл хаягаа оруулаад нэвтрэх линк хүлээн авна уу. Тэр линк дээр дараад шууд хуудсаа үүсгэх боломжтой.</p>
+        <div class="group">
+            <input type="email" id="email" placeholder="Таны имэйл хаяг" required>
+        </div>
+        <button id="send-btn" onclick="sendMagicLink()">Нэвтрэх линк илгээх</button>
+        <div class="status" id="email-status"></div>
     </div>
 
     <script>
-        // Таны Supabase мэдээлэл
         const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
-
-        // Supabase холбох
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            const errorDiv = document.getElementById('error');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Уншиж байна...";
-            errorDiv.innerText = "";
+        async function sendMagicLink() {
+            const emailInput = document.getElementById('email');
+            const status = document.getElementById('email-status');
+            const btn = document.getElementById('send-btn');
+            const email = emailInput.value.trim();
 
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            const name = document.getElementById('name').value.trim();
-            const bio = document.getElementById('bio').value.trim();
-            const avatar = document.getElementById('avatar').value.trim() || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${username}`;
-            const discord = document.getElementById('discord').value.trim();
-            const instagram = document.getElementById('instagram').value.trim();
-            const github = document.getElementById('github').value.trim();
-
-            // Username-ийг зөвхөн англи үсэг, тоо, зураас байгаа эсэхийг шалгах дүрэм
-            const usernameRegex = /^[a-zA-Z0-9_-]+$/;
-            if (!usernameRegex.test(username)) {
-                errorDiv.innerText = "Username зөвхөн англи үсэг, тоо, доогуур зураас агуулсан байх ёстой.";
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Хуудсаа үүсгэх";
+            if (!email) {
+                status.innerText = "Имэйл хаягаа оруулна уу.";
                 return;
             }
 
-            try {
-                // Supabase-ийн 'profiles' хүснэгт рүү мэдээллийг оруулах
-                const { error } = await supabaseClient
-                    .from('profiles')
-                    .insert([
-                        { username, name, bio, avatar, discord, instagram, github }
-                    ]);
+            status.innerText = "Илгээж байна...";
+            btn.disabled = true;
 
-                if (error) {
-                    // Хэрэв username давхардсан бол (PostgreSQL error code 23505)
-                    if (error.code === '23505') { 
-                        errorDiv.innerText = "Уучлаарай, энэ username аль хэдийн бүртгэгдсэн байна!";
-                    } else {
-                        errorDiv.innerText = "Алдаа гарлаа: " + error.message;
-                    }
-                } else {
-                    // Амжилттай болвол шинээр үүссэн хаяг руу шууд үсрүүлнэ
-                    window.location.href = `/${username}`;
+            const { error } = await supabaseClient.auth.signInWithOtp({
+                email: email,
+                options: {
+                    emailRedirectTo: window.location.origin + '/settings.html'
                 }
-            } catch (err) {
-                errorDiv.innerText = "Сүлжээний алдаа гарлаа.";
-                console.error(err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Хуудсаа үүсгэх";
+            });
+
+            if (error) {
+                status.innerText = "Алдаа: " + error.message;
+                btn.disabled = false;
+            } else {
+                status.innerText = "Имэйл рүү тань линк илгээлээ! Имэйлээ шалгана уу.";
             }
-        });
+        }
     </script>
 </body>
 </html>

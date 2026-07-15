@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тохиргоо | devnmd</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #050508; color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px 0;
+        }
+        .container {
+            background: rgba(15, 15, 25, 0.6);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 20px; padding: 35px;
+            width: 100%; max-width: 450px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.15);
+            box-sizing: border-box;
+        }
+        h2 { text-align: center; margin-bottom: 25px; color: #a12be2; }
+        .group { margin-bottom: 18px; }
+        label { display: block; font-size: 12px; margin-bottom: 6px; color: #8a8a9e; font-weight: bold; text-transform: uppercase; }
+        input, textarea {
+            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px;
+            color: #fff; box-sizing: border-box;
+        }
+        input:focus, textarea:focus { outline: none; border-color: #a12be2; }
+        button {
+            width: 100%; padding: 14px; background: #a12be2; border: none;
+            color: white; font-weight: bold; border-radius: 10px;
+            cursor: pointer; font-size: 16px; margin-top: 10px;
+        }
+        button:hover { background: #b33ff3; }
+        .logout-btn { background: #ff416c; margin-top: 10px; }
+        .logout-btn:hover { background: #ff4b2b; }
+        .status { text-align: center; color: #ff416c; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="settings-container">
+        <h2>Уншиж байна...</h2>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const container = document.getElementById('settings-container');
+        let sessionUser = null;
+        let userProfile = null;
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                window.location.href = '/register.html';
+                return;
+            }
+            sessionUser = user;
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            userProfile = profile;
+            renderForm();
+        }
+
+        function renderForm() {
+            if (!userProfile) {
+                // Хэрэглэгч анх удаа Username авах хэсэг
+                container.innerHTML = `
+                    <h2>Username сонгох</h2>
+                    <div class="group">
+                        <label>Username (Дараа нь өөрчлөх боломжгүй)</label>
+                        <input type="text" id="username" required placeholder="Жишээ нь: devnmd">
+                    </div>
+                    <div class="group">
+                        <label>Бүтэн нэр</label>
+                        <input type="text" id="name" required placeholder="Өөрийн нэр">
+                    </div>
+                    <button onclick="createProfile()">Хаяг үүсгэх</button>
+                    <div class="status" id="status-msg"></div>
+                `;
+            } else {
+                // Мэдээлэл засах хуудас
+                container.innerHTML = `
+                    <h2>Хуудсаа тохируулах</h2>
+                    <p style="text-align:center; color:#a12be2; font-weight:bold;">@${userProfile.username}</p>
+                    <div class="group">
+                        <label>Бүтэн нэр</label>
+                        <input type="text" id="name" value="${userProfile.name}">
+                    </div>
+                    <div class="group">
+                        <label>Bio (Танилцуулга)</label>
+                        <textarea id="bio" rows="2">${userProfile.bio || ''}</textarea>
+                    </div>
+                    <div class="group">
+                        <label>Профайл зураг (Сонгох)</label>
+                        <input type="file" id="avatar-file" accept="image/*">
+                    </div>
+                    <div class="group">
+                        <label>Арын дуу (MP3 гэх мэт хөгжим сонгох)</label>
+                        <input type="file" id="music-file" accept="audio/*">
+                    </div>
+                    <div class="group">
+                        <label>Discord</label>
+                        <input type="text" id="discord" value="${userProfile.discord || ''}">
+                    </div>
+                    <div class="group">
+                        <label>Instagram</label>
+                        <input type="text" id="instagram" value="${userProfile.instagram || ''}">
+                    </div>
+                    <div class="group">
+                        <label>GitHub</label>
+                        <input type="text" id="github" value="${userProfile.github || ''}">
+                    </div>
+                    <button onclick="updateProfile()">Мэдээлэл шинэчлэх</button>
+                    <button class="logout-btn" onclick="logout()">Гарах</button>
+                    <div class="status" id="status-msg"></div>
+                `;
+            }
+        }
+
+        async function createProfile() {
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            const name = document.getElementById('name').value.trim();
+            const status = document.getElementById('status-msg');
+
+            const regex = /^[a-zA-Z0-9_-]+$/;
+            if (!regex.test(username)) {
+                status.innerText = "Username буруу байна (зөвхөн англи үсэг, тоо).";
+                return;
+            }
+
+            status.innerText = "Хадгалж байна...";
+            const { error } = await supabaseClient.from('profiles').insert([{
+                id: sessionUser.id,
+                username,
+                name
+            }]);
+
+            if (error) {
+                status.innerText = "Алдаа: Энэ Username аль хэдийн бүртгэгдсэн байна!";
+            } else {
+                window.location.reload();
+            }
+        }
+
+        async function updateProfile() {
+            const name = document.getElementById('name').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const discord = document.getElementById('discord').value.trim();
+            const instagram = document.getElementById('instagram').value.trim();
+            const github = document.getElementById('github').value.trim();
+            const avatarFile = document.getElementById('avatar-file').files[0];
+            const musicFile = document.getElementById('music-file').files[0];
+            const status = document.getElementById('status-msg');
+
+            status.innerText = "Шинэчилж байна (Файлуудыг хуулж байна, түр хүлээнэ үү)...";
+
+            let avatarUrl = userProfile.avatar;
+            let musicUrl = userProfile.music_url;
+
+            try {
+                // Зураг хуулах хэсэг
+                if (avatarFile) {
+                    const ext = avatarFile.name.split('.').pop();
+                    const path = `${sessionUser.id}/avatar_${Date.now()}.${ext}`;
+                    const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(path, avatarFile, { upsert: true });
+                    if (uploadErr) throw uploadErr;
+                    avatarUrl = supabaseClient.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+                }
+
+                // Дуу хуулах хэсэг
+                if (musicFile) {
+                    const ext = musicFile.name.split('.').pop();
+                    const path = `${sessionUser.id}/music_${Date.now()}.${ext}`;
+                    const { error: uploadErr } = await supabaseClient.storage.from('music').upload(path, musicFile, { upsert: true });
+                    if (uploadErr) throw uploadErr;
+                    musicUrl = supabaseClient.storage.from('music').getPublicUrl(path).data.publicUrl;
+                }
+
+                const { error } = await supabaseClient.from('profiles').update({
+                    name, bio, discord, instagram, github, avatar: avatarUrl, music_url: musicUrl
+                }).eq('id', sessionUser.id);
+
+                if (error) throw error;
+                status.innerText = "Амжилттай хадгалагдлаа!";
+                setTimeout(() => window.location.href = `/${userProfile.username}`, 1000);
+            } catch (err) {
+                console.error(err);
+                status.innerText = "Алдаа гарлаа: " + err.message;
+            }
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        checkUser();
+    </script>
+</body>
+</html>
