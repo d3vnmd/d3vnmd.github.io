@@ -7,31 +7,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background-color: #030307;
-            color: #ffffff;
+            background-color: #020205; color: #ffffff;
             font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
         }
         .card {
             background: rgba(10, 10, 18, 0.7);
             border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            width: 100%;
-            max-width: 380px;
+            border-radius: 20px; padding: 40px;
+            text-align: center; width: 100%; max-width: 380px;
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
         }
         .brand-logo {
-            font-size: 36px;
-            font-weight: 900;
+            font-size: 36px; font-weight: 900;
             background: linear-gradient(45deg, #00f0ff, #bd00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
         p { color: #8a8a9e; font-size: 14px; margin-bottom: 30px; }
@@ -58,9 +49,8 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function checkDeviceAndSession() {
+        async function checkSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            
             if (session) {
                 const { data: user } = await supabaseClient
                     .from('profiles')
@@ -71,15 +61,14 @@
                 if (user) {
                     window.location.href = `/${user.username}`;
                 } else {
-                    window.location.href = '/username'; // Нэвтэрсэн ч нэрээ аваагүй бол
+                    window.location.href = '/username';
                 }
             }
         }
 
-        checkDeviceAndSession();
+        checkSession();
 
         async function signInWithDiscord() {
-            // URL-ээс авахыг хүссэн нэрийг уншиж санах ойд хадгалах
             const urlParams = new URLSearchParams(window.location.search);
             const claim = urlParams.get('claim');
             if (claim) {
@@ -88,7 +77,7 @@
 
             await supabaseClient.auth.signInWithOAuth({
                 provider: 'discord',
-                options: { redirectTo: window.location.origin + '/username' } // Түрүүнд /username рүү чиглүүлнэ
+                options: { redirectTo: window.location.origin + '/username' }
             });
         }
     </script>

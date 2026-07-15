@@ -15,7 +15,7 @@
             --cursor-type: default;
         }
         body {
-            background-color: #030307;
+            background-color: #020205;
             color: var(--text-color);
             font-family: var(--font-family);
             display: flex;
@@ -23,7 +23,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow-x: hidden;
             cursor: var(--cursor-type) !important;
             perspective: 1000px;
         }
@@ -33,17 +33,20 @@
             z-index: -2;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            pointer-events: none;
         }
         #bg-video {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
             z-index: -2;
+            pointer-events: none;
         }
         #enter-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #030307;
+            background: #020205;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -66,6 +69,7 @@
             max-width: 420px; 
             padding: 20px;
             transform-style: preserve-3d;
+            box-sizing: border-box;
         }
         .profile-card {
             background: rgba(10, 10, 18, var(--bg-opacity));
@@ -78,9 +82,10 @@
             -webkit-backdrop-filter: blur(var(--bg-blur));
             transform: translateZ(20px);
             transition: transform 0.1s ease-out;
+            position: relative;
         }
         .avatar {
-            width: 115px; height: 115px;
+            width: 110px; height: 110px;
             border-radius: 50%;
             border: 2px solid var(--accent-color);
             object-fit: cover;
@@ -90,16 +95,34 @@
         .name { font-size: 26px; font-weight: 800; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .username { font-size: 14px; color: var(--accent-color); font-weight: 700; margin-bottom: 20px; }
         .bio { font-size: 14px; color: #a1a1b3; margin-bottom: 30px; line-height: 1.6; }
+        
         .links-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;}
+        
+        /* Бүтэн талбайгаараа дарагддаг товчлуурын загвар */
+        .link-btn-wrapper {
+            width: 100%;
+            display: block;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
         .link-btn {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            color: white; padding: 15px; border-radius: 14px;
-            text-decoration: none; font-weight: 600; font-size: 14px;
+            color: #fff; 
+            padding: 16px; 
+            border-radius: 14px;
+            font-weight: 600; 
+            font-size: 14px;
             transition: all 0.25s ease-in-out;
+            text-align: center;
+            box-sizing: border-box;
+            width: 100%;
+            display: block;
         }
-        .link-btn:hover {
-            background: var(--accent-color); color: #000; border-color: var(--accent-color);
+        .link-btn-wrapper:hover .link-btn {
+            background: var(--accent-color); 
+            color: #000; 
+            border-color: var(--accent-color);
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
         }
@@ -107,6 +130,19 @@
             background: linear-gradient(45deg, #00f0ff, #bd00ff);
             color: #fff; font-size: 11px; padding: 4px 10px;
             border-radius: 20px; font-weight: bold; text-transform: uppercase;
+        }
+        .like-btn {
+            background: rgba(255, 0, 127, 0.1);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+            color: #ff007f; padding: 14px; border-radius: 14px;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        .like-btn:hover {
+            background: #ff007f; color: white; transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255,0,127,0.4);
         }
         #music-overlay {
             position: fixed;
@@ -140,6 +176,21 @@
             background: var(--accent-color);
             color: #000;
         }
+
+        /* 📱 Гар утасны тохируулга */
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .profile-card { padding: 30px 15px; border-radius: 18px; }
+            .avatar { width: 95px; height: 95px; }
+            .name { font-size: 22px; }
+            .bio { font-size: 13px; }
+            .link-btn { padding: 13px; font-size: 13px; }
+            #music-overlay {
+                bottom: 15px; left: 15px; right: 15px;
+                width: calc(100% - 60px);
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 <body>
@@ -147,10 +198,10 @@
     <div id="bg-container"></div>
     <video id="bg-video" autoplay loop muted style="display:none;"></video>
 
-    <a href="/settings" id="settings-shortcut-btn">⚙️ Settings</a>
+    <a href="/settings" id="settings-shortcut-btn">⚙️ Тохиргоо</a>
 
     <div id="enter-overlay" style="display: none;" onclick="startBiolink()">
-        [ Click to enter ]
+        [ Click to Enter ]
     </div>
 
     <div class="container" id="main-container">
@@ -158,7 +209,7 @@
     </div>
 
     <div id="music-overlay" style="display: none;">
-        <span style="font-size:14px;">🎵 Music:</span>
+        <span style="font-size:13px;">🎵 Хөгжим:</span>
         <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5" oninput="changeVolume(this.value)">
     </div>
 
@@ -182,8 +233,8 @@
             container.innerHTML = `
                 <div class="profile-card">
                     <h2 style="background: linear-gradient(45deg, #00f0ff, #bd00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size:36px; font-weight:900;">devnmd</h2>
-                    <p style="color: #888;">Загварлаг нэрийн хуудсаа хурдан үүсгэж эхэл.</p>
-                    <a href="/register" class="link-btn" style="display:inline-block; margin-top:15px; text-decoration:none;">Одоо нэгдэх</a>
+                    <p style="color: #888;">Өөрийн гэсэн загварлаг неон нэрийн хуудсаа үнэгүй үүсгээрэй.</p>
+                    <a href="/register" class="link-btn-wrapper"><div class="link-btn" style="background:#00f0ff; color:#000;">Одоо үүсгэх</div></a>
                 </div>
             `;
         } else {
@@ -206,8 +257,8 @@
                         document.getElementById('enter-overlay').style.display = 'none';
                         container.innerHTML = `
                             <div class="profile-card" style="border-color: #ff0055;">
-                                <h2 style="color: #ff0055;">БАНДАСАН ХЭРЭГЛЭГЧ</h2>
-                                <p style="color: #888;">Энэ хаяг дүрмийн бус үйлдэл гаргасан тул хаагдсан байна.</p>
+                                <h2 style="color: #ff0055;">ХААГДСАН ХЭРЭГЛЭГЧ</h2>
+                                <p style="color: #888;">Энэ хаягийг дүрэм зөрчсөн тул түр хаасан байна.</p>
                             </div>
                         `;
                         return;
@@ -223,12 +274,15 @@
                         document.documentElement.style.setProperty('--cursor-type', `url(${user.custom_cursor}), auto`);
                     }
 
-                    if (user.bg_type === 'video' && user.background_url) {
-                        const vid = document.getElementById('bg-video');
-                        vid.src = user.background_url;
-                        vid.style.display = 'block';
-                    } else if (user.background_url) {
-                        document.getElementById('bg-container').style.backgroundImage = `url(${user.background_url})`;
+                    if (user.background_url) {
+                        const isVideo = user.bg_type === 'video' || user.background_url.endsWith('.mp4') || user.background_url.endsWith('.webm');
+                        if (isVideo) {
+                            const vid = document.getElementById('bg-video');
+                            vid.src = user.background_url;
+                            vid.style.display = 'block';
+                        } else {
+                            document.getElementById('bg-container').style.backgroundImage = `url(${user.background_url})`;
+                        }
                     }
 
                     const { data: { user: loggedInUser } } = await supabaseClient.auth.getUser();
@@ -243,35 +297,68 @@
                     }
 
                     let linksHTML = '';
+                    
+                    // 🔗 Автомат сошиал холбоосууд
                     const socials = user.socials || {};
                     for (const [platform, value] of Object.entries(socials)) {
                         if (value) {
-                            linksHTML += `<a href="${value.startsWith('http') ? value : 'https://' + value}" target="_blank" class="link-btn">${platform.toUpperCase()}</a>`;
+                            let url = value;
+                            let onclick = '';
+                            if (platform === 'discord') {
+                                if (!value.startsWith('http')) {
+                                    url = '#';
+                                    onclick = `onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID санах ойд хуулагдлаа: ${value}'); return false;"`;
+                                }
+                            } else if (platform === 'instagram' && !value.startsWith('http')) {
+                                url = `https://instagram.com/${value}`;
+                            } else if (platform === 'github' && !value.startsWith('http')) {
+                                url = `https://github.com/${value}`;
+                            } else if (platform === 'youtube' && !value.startsWith('http')) {
+                                url = `https://youtube.com/${value.startsWith('@') ? value : '@' + value}`;
+                            } else if (platform === 'steam' && !value.startsWith('http')) {
+                                url = `https://steamcommunity.com/id/${value}`;
+                            }
+                            linksHTML += `
+                                <a href="${url}" ${onclick} target="_blank" class="link-btn-wrapper">
+                                    <div class="link-btn">${platform.toUpperCase()}</div>
+                                </a>
+                            `;
                         }
                     }
+
+                    // 🔗 Хэрэглэгчийн өөрийн нэмсэн Custom Холбоосууд
+                    const customLinks = user.custom_links || [];
+                    customLinks.forEach(link => {
+                        if (link.title && link.url) {
+                            linksHTML += `
+                                <a href="${link.url.startsWith('http') ? link.url : 'https://' + link.url}" target="_blank" class="link-btn-wrapper">
+                                    <div class="link-btn">${link.title}</div>
+                                </a>
+                            `;
+                        }
+                    });
 
                     container.innerHTML = `
                         <div class="profile-card" id="card">
                             <img src="${user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + username}" class="avatar" alt="Avatar">
                             <div class="name">${user.name} ${user.badge ? `<span class="badge-pill">${user.badge}</span>` : ''}</div>
                             <div class="username">@${username}</div>
-                            <div class="bio">${user.bio || 'Танилцуулга оруулаагүй байна.'}</div>
+                            <div class="bio">${user.bio || 'Мэдээлэл оруулаагүй байна.'}</div>
                             <div class="links-container">
                                 ${linksHTML || '<p style="color: #444;">Холбоос байхгүй байна.</p>'}
                             </div>
-                            <button class="link-btn" style="background:rgba(255, 0, 127, 0.1); border-color:#ff007f; color:#ff007f;" onclick="likeProfile()">❤️ Like: <span id="like-count">${user.likes_count || 0}</span></button>
+                            <button class="like-btn" onclick="likeProfile(event)">❤️ Like: <span id="like-count">${user.likes_count || 0}</span></button>
                         </div>
                     `;
 
                     init3DTilt();
 
                 } else {
-                    // ХЭРЭГЛЭГЧ ОЛДОХГҮЙ ҮЕД ЧИГЛҮҮЛЭХ ШИНЭЧЛЭЛТ
                     container.innerHTML = `
                         <div class="profile-card">
-                            <h2 style="color: #ff007f;">404 Олдоогүй</h2>
+                            <h2 style="color: #ff007f;">404 Байхгүй</h2>
                             <p style="color: #888;">"${username}" нэртэй хэрэглэгч бүртгэгдээгүй байна.</p>
-                            <a href="/register?claim=${username}" class="link-btn" style="display:inline-block; margin-top:15px; text-decoration:none;">Энэ нэрийг авах</a>
+                            <a href="/register?claim=${username}" class="link-btn-wrapper"><div class="link-btn" style="background:#00f0ff; color:#000;">Энэ нэрийг авах</div></a>
                         </div>
                     `;
                 }
@@ -281,30 +368,39 @@
         }
 
         function startBiolink() {
-            document.getElementById('enter-overlay').style.display = 'none';
-            if (audioPlayer) audioPlayer.play();
+            const overlay = document.getElementById('enter-overlay');
+            if (overlay) overlay.remove();
+            if (audioPlayer) audioPlayer.play().catch(e => console.log("Music play blocked by browser."));
         }
 
         function changeVolume(val) {
             if (audioPlayer) audioPlayer.volume = val;
         }
 
-        async function likeProfile() {
+        async function likeProfile(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
             const likedKey = `liked_${username}`;
             if (localStorage.getItem(likedKey)) {
                 alert("Та аль хэдийн Like дарсан байна!");
                 return;
             }
             const { error } = await supabaseClient.rpc('increment_likes', { profile_username: username });
-            if (!error) {
+            if (error) {
+                alert("Алдаа гарлаа: " + error.message);
+            } else {
                 localStorage.setItem(likedKey, 'true');
                 const count = document.getElementById('like-count');
-                count.innerText = parseInt(count.innerText) + 1;
+                if (count) count.innerText = parseInt(count.innerText) + 1;
             }
         }
 
         function init3DTilt() {
             const card = document.getElementById('card');
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return; // Утсан дээр унтарна
+            
             document.addEventListener('mousemove', (e) => {
                 if (!card) return;
                 const xAxis = (window.innerWidth / 2 - e.pageX) / 25;

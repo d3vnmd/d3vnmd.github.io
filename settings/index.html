@@ -7,19 +7,20 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background-color: #05050a; color: #fff;
+            background-color: #030206; color: #fff;
             font-family: 'Segoe UI', sans-serif;
             margin: 0; display: flex; min-height: 100vh;
         }
         /* Зүүн талын Sidebar */
         .sidebar {
-            width: 250px; background: #0a0a12;
+            width: 250px; background: #07070d;
             border-right: 1px solid rgba(0, 240, 255, 0.1);
             padding: 30px 20px; display: flex; flex-direction: column; gap: 10px;
         }
         .brand {
             font-size: 24px; font-weight: 900; color: #00f0ff;
             margin-bottom: 30px; text-shadow: 0 0 10px rgba(0,240,255,0.3);
+            text-align: center;
         }
         .menu-btn {
             background: transparent; border: none; color: #8a8a9e;
@@ -35,22 +36,22 @@
         .tab-section { display: none; }
         .tab-section.active { display: block; }
         
-        /* Stats Cards */
+        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card {
-            background: #0d0d18; border: 1px solid rgba(255,255,255,0.05);
+            background: #090911; border: 1px solid rgba(255,255,255,0.05);
             border-radius: 16px; padding: 20px;
         }
-        .stat-card h4 { margin: 0 0 5px 0; color: #8a8a9e; font-size: 12px; text-transform: uppercase; }
+        .stat-card h4 { margin: 0 0 5px 0; color: #8a8a9e; font-size: 11px; text-transform: uppercase; }
         .stat-card p { margin: 0; font-size: 24px; font-weight: 800; color: #fff; }
-        .stat-card span { font-size: 11px; color: #00f0ff; }
+        .stat-card span { font-size: 11px; color: #bd00ff; }
 
-        /* Формууд */
+        /* Картууд */
         .card {
-            background: #0d0d18; border: 1px solid rgba(0, 240, 255, 0.1);
+            background: #090911; border: 1px solid rgba(0, 240, 255, 0.05);
             border-radius: 16px; padding: 25px; margin-bottom: 20px;
         }
-        h3 { margin-top: 0; color: #00f0ff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;}
+        h3 { margin-top: 0; color: #00f0ff; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px;}
         .group { margin-bottom: 15px; text-align: left;}
         label { display: block; font-size: 12px; color: #8a8a9e; margin-bottom: 6px; font-weight: bold; }
         input, textarea, select {
@@ -64,16 +65,25 @@
         }
         button:hover { background: #55f7ff; }
         .save-btn { width: 100%; font-size: 16px; margin-top: 10px; background: linear-gradient(45deg, #00f0ff, #bd00ff); color: white;}
-        .save-btn:hover { opacity: 0.9; }
         .cooldown-text { font-size: 11px; color: #ff0055; margin-top: 5px; display: block; }
+        
+        /* Custom Links List */
+        .custom-link-item {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }
 
-        /* 📱 ГАР УТАСНЫ ЗАГВАР ШИНЭЧЛЭЛТ (Responsive Mobile) */
+        /* 📱 ГАР УТАСНЫ ЭРТНИЙ ТӨГС ШИЙДЭЛ (Mobile Responsive) */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding: 20px; box-sizing: border-box; }
-            .brand { margin-bottom: 15px; text-align: center; }
-            .menu-btn { padding: 10px; font-size: 13px; }
-            .main-content { padding: 20px; }
+            .sidebar {
+                width: 100%; border-right: none; border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+                padding: 15px; box-sizing: border-box; flex-direction: row; overflow-x: auto;
+                white-space: nowrap; gap: 8px; justify-content: flex-start;
+            }
+            .brand { display: none; }
+            .menu-btn { padding: 10px 14px; font-size: 12px; flex: 0 0 auto; }
+            .main-content { padding: 20px 15px; }
             .stats-grid { gap: 15px; }
             .stat-card { padding: 15px; }
             .stat-card p { font-size: 20px; }
@@ -84,44 +94,44 @@
 
     <div class="sidebar">
         <div class="brand">devnmd</div>
-        <button class="menu-btn active" onclick="showTab('account')">👤 Account</button>
-        <button class="menu-btn" onclick="showTab('customize')">🎨 Customize</button>
-        <button class="menu-btn" onclick="showTab('links')">🔗 Links</button>
-        <button class="menu-btn" onclick="showTab('templates')">💎 Templates</button>
-        <a href="/" id="my-page-btn" class="menu-btn" style="margin-top:auto; text-decoration:none; color:#bd00ff;">👁️ My Page</a>
-        <button class="menu-btn" style="color: #ff0055;" onclick="logout()">❌ Logout</button>
+        <button class="menu-btn active" onclick="showTab('account')">👤 Профайл</button>
+        <button class="menu-btn" onclick="showTab('customize')">🎨 Загварчилгаа</button>
+        <button class="menu-btn" onclick="showTab('links')">🔗 Холбоосууд</button>
+        <button class="menu-btn" onclick="showTab('templates')">💎 Загварууд</button>
+        <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#bd00ff;">👁️ Миний хуудас</a>
+        <button class="menu-btn" style="color: #ff0055;" onclick="logout()">❌ Гарах</button>
     </div>
 
     <div class="main-content">
         <div id="tab-account" class="tab-section active">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h4>Username</h4>
+                    <h4>Хэрэглэгч</h4>
                     <p id="stat-username">@username</p>
-                    <span id="cooldown-status">Change available now</span>
+                    <span id="cooldown-status">Солих боломжтой</span>
                 </div>
                 <div class="stat-card">
                     <h4>UID</h4>
                     <p id="stat-uid">#0</p>
-                    <span>Joined after 100% of users</span>
+                    <span>Бүртгэлийн дугаар</span>
                 </div>
                 <div class="stat-card">
-                    <h4>Total Likes</h4>
+                    <h4>Нийт Лайк</h4>
                     <p id="stat-likes">0</p>
-                    <span>Likes earned on your page</span>
+                    <span>Хуудаснаас авсан</span>
                 </div>
             </div>
 
             <div class="card">
-                <h3>Account Settings</h3>
+                <h3>Хаяг Төлөв</h3>
                 <div class="group">
-                    <label>Change Username (7 хоногийн cooldown-той)</label>
-                    <input type="text" id="new-username" placeholder="Шинэ нэр оруулах">
+                    <label>Нэр солих (7 хоногт нэг удаа)</label>
+                    <input type="text" id="new-username" placeholder="Шинэ нэр">
                     <span id="username-cooldown-timer" class="cooldown-text"></span>
-                    <button style="margin-top: 10px;" onclick="changeUsername()">Username Шинэчлэх</button>
+                    <button style="margin-top:10px;" onclick="changeUsername()">Шинэчлэх</button>
                 </div>
                 <div class="group">
-                    <label>Дэлгэцийн нэр (Display Name)</label>
+                    <label>Дэлгэцийн нэр</label>
                     <input type="text" id="profile-name">
                 </div>
                 <div class="group">
@@ -129,7 +139,7 @@
                     <textarea id="profile-bio" rows="3"></textarea>
                 </div>
                 <div class="group">
-                    <label>Профайл зураг (Avatar Сонгох)</label>
+                    <label>Профайл зураг (Avatar оруулах)</label>
                     <input type="file" id="avatar-file" accept="image/*">
                 </div>
             </div>
@@ -137,33 +147,33 @@
 
         <div id="tab-customize" class="tab-section">
             <div class="card">
-                <h3>Background Customize</h3>
+                <h3>Арын Фон Засах</h3>
                 <div class="group">
                     <label>Фон Төрөл</label>
                     <select id="bg-type" onchange="toggleBgInputs()">
                         <option value="color">Дан өнгө</option>
-                        <option value="image">Зураг / GIF оруулах (Файл)</option>
-                        <option value="video">Бичлэг оруулах (Файл)</option>
+                        <option value="image">Зураг / GIF (Хуулах)</option>
+                        <option value="video">Бичлэг (Хуулах)</option>
                     </select>
                 </div>
                 <div class="group" id="file-upload-group" style="display:none;">
-                    <label>Файл Сонгох (Зураг, GIF эсвэл Видео)</label>
+                    <label>Файл Сонгох (GIF, Зураг, Видео)</label>
                     <input type="file" id="bg-file" accept="image/*,video/*">
                 </div>
                 <div class="group">
-                    <label>Арын фоны бүрсийлт (Blur - px)</label>
+                    <label>Фоны бүрсийлт (Blur: 0px - 30px)</label>
                     <input type="range" id="bg-blur" min="0" max="30" value="10">
                 </div>
                 <div class="group">
-                    <label>Картын тунгалаг байдал (Opacity)</label>
+                    <label>Картын тунгалаг байдал (Opacity: 10% - 100%)</label>
                     <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="0.6">
                 </div>
             </div>
 
             <div class="card">
-                <h3>Font & Effects</h3>
+                <h3>Бичиг ба Үйлдэл</h3>
                 <div class="group">
-                    <label>Үсгийн загвар (Font Family)</label>
+                    <label>Үсгийн Загвар (Font)</label>
                     <select id="font-family">
                         <option value="Segoe UI">Segoe UI</option>
                         <option value="Courier New">Courier New (Hacker)</option>
@@ -172,11 +182,11 @@
                     </select>
                 </div>
                 <div class="group">
-                    <label>Custom Cursor (Зургийн линк)</label>
+                    <label>Хулганы заагч (Custom Cursor Линк)</label>
                     <input type="text" id="custom-cursor" placeholder="https://example.com/cursor.png">
                 </div>
                 <div class="group">
-                    <label>Арын Хөгжим сонгох (MP3 файл)</label>
+                    <label>Арын Хөгжим оруулах (MP3 файл)</label>
                     <input type="file" id="music-file" accept="audio/*">
                 </div>
             </div>
@@ -184,39 +194,43 @@
 
         <div id="tab-links" class="tab-section">
             <div class="card">
-                <h3>Social Platform Links</h3>
-                <div class="group">
-                    <label>Discord (Нэр эсвэл ID)</label>
-                    <input type="text" id="link-discord">
+                <h3>Ухаалаг Сошиал Холбоос (Зөвхөн нэрээ бичнэ)</h3>
+                <div class="group"><label>TikTok</label><input type="text" id="link-tiktok" placeholder="хэрэглэгчийн нэр"></div>
+                <div class="group"><label>Instagram</label><input type="text" id="link-instagram" placeholder="хэрэглэгчийн нэр"></div>
+                <div class="group"><label>GitHub</label><input type="text" id="link-github" placeholder="хэрэглэгчийн нэр"></div>
+                <div class="group"><label>YouTube</label><input type="text" id="link-youtube" placeholder="@-тэй нэр"></div>
+                <div class="group"><label>Steam</label><input type="text" id="link-steam" placeholder="профайл ID"></div>
+                <div class="group"><label>Discord ID</label><input type="text" id="link-discord" placeholder="ID эсвэл нэр"></div>
+            </div>
+
+            <div class="card">
+                <h3>Дурын холбоос нэмэх (Custom Links)</h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="custom-title" placeholder="Товчны нэр">
+                    <input type="text" id="custom-url" placeholder="Холбоос линк (https://...)">
+                    <button onclick="addCustomLink()">Нэмэх</button>
                 </div>
-                <div class="group">
-                    <label>Instagram Username</label>
-                    <input type="text" id="link-instagram">
-                </div>
-                <div class="group">
-                    <label>GitHub Username</label>
-                    <input type="text" id="link-github">
-                </div>
-                <div class="group">
-                    <label>YouTube Channel (@-тэй хаяг)</label>
-                    <input type="text" id="link-youtube">
-                </div>
-                <div class="group">
-                    <label>Steam Custom URL ID</label>
-                    <input type="text" id="link-steam">
-                </div>
+                <div id="custom-links-list"></div>
             </div>
         </div>
 
         <div id="tab-templates" class="tab-section">
             <div class="card">
-                <h3>Pre-made Theme Templates</h3>
-                <p style="color:#8a8a9e;">Өөрийн хуудсанд бэлэн загварыг ганцхан товчоор ашиглаарай.</p>
-                <div class="group">
-                    <button onclick="applyTemplate('cyberpunk')" style="background:#00f0ff; color:#000; margin-right:10px;">Cyberpunk Neon</button>
-                    <button onclick="applyTemplate('obsidian')" style="background:#111; color:#fff; margin-right:10px;">Obsidian Dark</button>
-                    <button onclick="applyTemplate('sakura')" style="background:#ffb3d9; color:#000;">Sakura Pink</button>
+                <h3>Бэлэн Загварууд</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button onclick="applyTemplate('cyberpunk')" style="background:#00f0ff; color:#000;">Cyberpunk</button>
+                    <button onclick="applyTemplate('obsidian')" style="background:#111; color:#fff;">Obsidian</button>
+                    <button onclick="applyTemplate('sakura')" style="background:#ffb3d9; color:#000;">Sakura</button>
                 </div>
+            </div>
+
+            <div class="card">
+                <h3>Өөрийн загварыг хадгалах</h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="template-name" placeholder="Загварын нэр">
+                    <button onclick="saveCurrentAsTemplate()">💾 Загвар хадгалах</button>
+                </div>
+                <div id="user-templates-list"></div>
             </div>
         </div>
 
@@ -231,6 +245,8 @@
 
         let sessionUser = null;
         let userProfile = null;
+        let myCustomLinks = [];
+        let mySavedTemplates = [];
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -271,13 +287,21 @@
             document.getElementById('font-family').value = userProfile.font_family || 'Segoe UI';
             document.getElementById('custom-cursor').value = userProfile.custom_cursor || '';
 
+            // Сошиал унших
             const socials = userProfile.socials || {};
-            document.getElementById('link-discord').value = socials.discord || '';
+            document.getElementById('link-tiktok').value = socials.tiktok || '';
             document.getElementById('link-instagram').value = socials.instagram || '';
             document.getElementById('link-github').value = socials.github || '';
             document.getElementById('link-youtube').value = socials.youtube || '';
             document.getElementById('link-steam').value = socials.steam || '';
+            document.getElementById('link-discord').value = socials.discord || '';
 
+            // Custom links & Templates
+            myCustomLinks = userProfile.custom_links || [];
+            mySavedTemplates = userProfile.user_templates || [];
+            
+            renderCustomLinks();
+            renderUserTemplates();
             toggleBgInputs();
         }
 
@@ -303,9 +327,8 @@
                 if (now < nextAvailable) {
                     const diffTime = Math.abs(nextAvailable - now);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    document.getElementById('cooldown-status').innerText = `Locked for ${diffDays} days`;
+                    document.getElementById('cooldown-status').innerText = `Цоожтой (${diffDays} өдөр)`;
                     document.getElementById('cooldown-status').style.color = '#ff0055';
-                    document.getElementById('username-cooldown-timer').innerText = `Та ${diffDays} хоногийн дараа нэрээ дахин солих боломжтой.`;
                 }
             }
         }
@@ -316,7 +339,7 @@
 
             const regex = /^[a-zA-Z0-9_-]+$/;
             if (!regex.test(newUsername)) {
-                alert("Username зөвхөн англи үсэг, тоо, зураас агуулна.");
+                alert("Зөвхөн англи үсэг, тоо орох боломжтой.");
                 return;
             }
 
@@ -329,11 +352,119 @@
                 .eq('id', sessionUser.id);
 
             if (error) {
-                alert("Алдаа: Энэ Username аль хэдийн бүртгэгдсэн байна!");
+                alert("Алдаа: Сонгосон нэр бүртгэлтэй эсвэл хязгаар дуусаагүй байна!");
             } else {
                 alert("Username амжилттай шинэчлэгдлээ!");
                 window.location.reload();
             }
+        }
+
+        // Custom Links logic
+        function renderCustomLinks() {
+            const list = document.getElementById('custom-links-list');
+            list.innerHTML = '';
+            myCustomLinks.forEach((link, idx) => {
+                const div = document.createElement('div');
+                div.className = 'custom-link-item';
+                div.innerHTML = `
+                    <div><strong>${link.title}</strong> - <span style="color:#00f0ff; font-size:12px;">${link.url}</span></div>
+                    <button onclick="removeCustomLink(${idx})" style="background:#ff0055; color:#fff; padding:5px 10px; font-size:12px;">Устгах</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addCustomLink() {
+            const title = document.getElementById('custom-title').value.trim();
+            const url = document.getElementById('custom-url').value.trim();
+            if (!title || !url) return;
+
+            myCustomLinks.push({ title, url });
+            document.getElementById('custom-title').value = '';
+            document.getElementById('custom-url').value = '';
+            renderCustomLinks();
+        }
+
+        function removeCustomLink(idx) {
+            myCustomLinks.splice(idx, 1);
+            renderCustomLinks();
+        }
+
+        // Custom user-created templates
+        function renderUserTemplates() {
+            const list = document.getElementById('user-templates-list');
+            list.innerHTML = '';
+            mySavedTemplates.forEach((tpl, idx) => {
+                const div = document.createElement('div');
+                div.className = 'custom-link-item';
+                div.innerHTML = `
+                    <div><strong>${tpl.name}</strong></div>
+                    <div>
+                        <button onclick="applyUserTemplate(${idx})" style="background:#00f0ff; color:#000; padding:5px 10px; font-size:12px; margin-right:5px;">Идэвхжүүлэх</button>
+                        <button onclick="removeUserTemplate(${idx})" style="background:#ff0055; color:#fff; padding:5px 10px; font-size:12px;">Устгах</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        async function saveCurrentAsTemplate() {
+            const name = document.getElementById('template-name').value.trim();
+            if (!name) return;
+
+            const currentConfig = {
+                name: name,
+                bg_type: document.getElementById('bg-type').value,
+                bg_blur: document.getElementById('bg-blur').value,
+                bg_opacity: document.getElementById('bg-opacity').value,
+                font_family: document.getElementById('font-family').value,
+                custom_cursor: document.getElementById('custom-cursor').value,
+                background_url: userProfile.background_url,
+                music_url: userProfile.music_url
+            };
+
+            mySavedTemplates.push(currentConfig);
+            
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ user_templates: mySavedTemplates })
+                .eq('id', sessionUser.id);
+
+            if (!error) {
+                alert(`"${name}" загвар амжилттай хадгалагдлаа!`);
+                document.getElementById('template-name').value = '';
+                renderUserTemplates();
+            }
+        }
+
+        async function applyUserTemplate(idx) {
+            const tpl = mySavedTemplates[idx];
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({
+                    bg_type: tpl.bg_type,
+                    bg_blur: tpl.bg_blur,
+                    bg_opacity: tpl.bg_opacity,
+                    font_family: tpl.font_family,
+                    custom_cursor: tpl.custom_cursor,
+                    background_url: tpl.background_url,
+                    music_url: tpl.music_url
+                })
+                .eq('id', sessionUser.id);
+
+            if (!error) {
+                alert(`"${tpl.name}" загвар идэвхжлээ!`);
+                window.location.reload();
+            }
+        }
+
+        async function removeUserTemplate(idx) {
+            mySavedTemplates.splice(idx, 1);
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ user_templates: mySavedTemplates })
+                .eq('id', sessionUser.id);
+            if (!error) renderUserTemplates();
         }
 
         async function applyTemplate(theme) {
@@ -348,7 +479,7 @@
 
             const { error } = await supabaseClient.from('profiles').update(config).eq('id', sessionUser.id);
             if (!error) {
-                alert(`${theme} загвар идэвхжлээ!`);
+                alert("Загвар амжилттай солигдлоо!");
                 window.location.reload();
             }
         }
@@ -370,11 +501,12 @@
             const avatarFile = document.getElementById('avatar-file').files[0];
 
             const socials = {
-                discord: document.getElementById('link-discord').value.trim(),
+                tiktok: document.getElementById('link-tiktok').value.trim(),
                 instagram: document.getElementById('link-instagram').value.trim(),
                 github: document.getElementById('link-github').value.trim(),
                 youtube: document.getElementById('link-youtube').value.trim(),
-                steam: document.getElementById('link-steam').value.trim()
+                steam: document.getElementById('link-steam').value.trim(),
+                discord: document.getElementById('link-discord').value.trim()
             };
 
             let backgroundUrl = userProfile.background_url;
@@ -382,7 +514,6 @@
             let avatarUrl = userProfile.avatar;
 
             try {
-                // Storage Bucket ашиглан файл хуулах (GIF, Видео, Дуу, Зураг)
                 if (avatarFile) {
                     const ext = avatarFile.name.split('.').pop();
                     const path = `${sessionUser.id}/avatar_${Date.now()}.${ext}`;
@@ -407,7 +538,7 @@
                 const { error } = await supabaseClient.from('profiles').update({
                     name, bio, bg_type: bgType, bg_blur: bgBlur, bg_opacity: bgOpacity,
                     font_family: fontFamily, custom_cursor: customCursor, socials,
-                    background_url: backgroundUrl, music_url: musicUrl, avatar: avatarUrl
+                    custom_links: myCustomLinks, background_url: backgroundUrl, music_url: musicUrl, avatar: avatarUrl
                 }).eq('id', sessionUser.id);
 
                 if (error) throw error;
