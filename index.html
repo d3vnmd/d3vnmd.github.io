@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biolink Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Guns.lol-той төстэй харанхуй, чамин дизайн */
         body {
             background-color: #0d0d0d;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -75,9 +75,15 @@
             border-color: #ff416c;
             transform: translateY(-2px);
         }
-        /* Олдоогүй үед харагдах хуудас */
-        .not-found {
-            text-align: center;
+        .register-btn {
+            display: inline-block;
+            margin-top: 15px;
+            background: #ff416c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -88,36 +94,46 @@
     </div>
 
     <script>
-        // URL-аас хэрэглэгчийн нэрийг салгаж авах
+        // Өөрийн Supabase мэдээллийг энд оруулна
+        const SUPABASE_URL = "ЭНД_ӨӨРИЙН_SUPABASE_URL_ХУУЛНА";
+        const SUPABASE_ANON_KEY = "ЭНД_ӨӨРИЙН_SUPABASE_ANON_KEY_ХУУЛНА";
+
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         const urlParams = new URLSearchParams(window.location.search);
         let username = urlParams.get('u');
 
         if (username) {
-            // URL-ийн сүүлийн '/' тэмдэгтийг цэвэрлэх
-            username = username.replace(/\/$/, "");
+            username = username.replace(/\/$/, "").toLowerCase();
         }
 
         const container = document.getElementById('main-container');
 
+        // Хэрэв шууд d3vnmd.github.io руу орвол (хэрэглэгчгүй)
         if (!username || username === "") {
-            // Хэрэв ямар нэгэн username бичихгүй шууд орвол харагдах нүүр хуудас
             container.innerHTML = `
                 <div class="profile-card">
-                    <h2>Guns.lol шиг өөрийн хуудсыг нээгээрэй</h2>
-                    <p style="color: #888;">Өөрийн хуудас руу орохын тулд URL-ийн араас өөрийн нэрийг бичнэ үү.</p>
-                    <p style="font-weight: bold; color: #ff416c;">Жишээ нь: d3vnmd.github.io/a</p>
+                    <h2>Өөрийн хуудсыг үүсгээрэй</h2>
+                    <p style="color: #888;">Guns.lol шиг загварлаг өөрийн нэрийн хуудастай болоход ердөө 1 минут хангалттай.</p>
+                    <a href="/register.html" class="register-btn">Одоо бүртгүүлэх</a>
                 </div>
             `;
         } else {
-            // JSON файлаас мэдээллийг татаж авах
-            fetch('./users.json')
-                .then(response => response.json())
-                .then(users => {
-                    const user = users[username];
+            // Supabase-ээс тухайн username-ийг хайх
+            async function fetchUserProfile() {
+                try {
+                    const { data: user, error } = await supabaseClient
+                        .from('profiles')
+                        .select('*')
+                        .eq('username', username)
+                        .maybeSingle();
+
+                    if (error) throw error;
 
                     if (user) {
-                        // Хэрэглэгч олдвол түүний мэдээллийг харуулна
-                        document.title = `${user.name} (@${username}) | Biolink`;
+                        // Хэрэглэгч олдвол харуулна
+                        document.title = `${user.name} (@${username})`;
                         
                         let linksHTML = '';
                         if (user.discord) linksHTML += `<a href="#" class="link-btn">Discord: ${user.discord}</a>`;
@@ -129,27 +145,29 @@
                                 <img src="${user.avatar}" class="avatar" alt="Avatar">
                                 <div class="name">${user.name}</div>
                                 <div class="username">@${username}</div>
-                                <div class="bio">${user.bio}</div>
+                                <div class="bio">${user.bio || 'Мэдээлэл оруулаагүй байна.'}</div>
                                 <div class="links-container">
-                                    ${linksHTML}
+                                    ${linksHTML || '<p style="color: #555;">Холбоос нэмэгдээгүй байна.</p>'}
                                 </div>
                             </div>
                         `;
                     } else {
                         // Хэрэглэгч олдохгүй бол
                         container.innerHTML = `
-                            <div class="profile-card not-found">
+                            <div class="profile-card">
                                 <h2 style="color: #ff416c;">404 Олдоогүй</h2>
                                 <p>"${username}" нэртэй хэрэглэгч бүртгэгдээгүй байна.</p>
-                                <a href="/" class="link-btn" style="display: inline-block; margin-top: 15px;">Нүүр хуудас руу буцах</a>
+                                <a href="/register.html" class="register-btn">Энэ нэрийг авах</a>
                             </div>
                         `;
                     }
-                })
-                .catch(error => {
-                    console.error("Алдаа гарлаа:", error);
-                    container.innerHTML = `<div class="profile-card">Мэдээлэл уншихад алдаа гарлаа.</div>`;
-                });
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = `<div class="profile-card">Өгөгдлийг уншихад алдаа гарлаа.</div>`;
+                }
+            }
+
+            fetchUserProfile();
         }
     </script>
 </body>
