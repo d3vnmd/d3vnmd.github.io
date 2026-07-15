@@ -5,8 +5,8 @@
     <title>Уншиж байна...</title>
     <script type="text/javascript">
       var path = window.location.pathname.replace(/^\/|\/$/g, '');
-      // Хэрэв /register эсвэл /settings руу хандаж байвал чиглүүлэхгүй
-      if (path !== 'settings' && path !== 'register') {
+      // Системийн үндсэн хуудсуудыг чиглүүлэлтээс хасна
+      if (path !== 'settings' && path !== 'register' && path !== 'username') {
           window.location.replace(window.location.origin + '/?u=' + path);
       }
     </script>

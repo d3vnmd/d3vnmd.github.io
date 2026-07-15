@@ -58,10 +58,37 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        async function checkDeviceAndSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (session) {
+                const { data: user } = await supabaseClient
+                    .from('profiles')
+                    .select('username')
+                    .eq('id', session.user.id)
+                    .maybeSingle();
+
+                if (user) {
+                    window.location.href = `/${user.username}`;
+                } else {
+                    window.location.href = '/username'; // Нэвтэрсэн ч нэрээ аваагүй бол
+                }
+            }
+        }
+
+        checkDeviceAndSession();
+
         async function signInWithDiscord() {
+            // URL-ээс авахыг хүссэн нэрийг уншиж санах ойд хадгалах
+            const urlParams = new URLSearchParams(window.location.search);
+            const claim = urlParams.get('claim');
+            if (claim) {
+                localStorage.setItem('claim_username', claim);
+            }
+
             await supabaseClient.auth.signInWithOAuth({
                 provider: 'discord',
-                options: { redirectTo: window.location.origin + '/settings' }
+                options: { redirectTo: window.location.origin + '/username' } // Түрүүнд /username рүү чиглүүлнэ
             });
         }
     </script>

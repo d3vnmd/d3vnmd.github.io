@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Username Сонгох | devnmd</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #030307; color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
+        }
+        .card {
+            background: rgba(10, 10, 18, 0.7);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px; padding: 35px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h2 { color: #00f0ff; margin-bottom: 10px; }
+        p { color: #8a8a9e; font-size: 14px; margin-bottom: 25px; }
+        .group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 11px; color: #8a8a9e; margin-bottom: 6px; font-weight: bold; text-transform: uppercase; }
+        input {
+            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px;
+            color: white; box-sizing: border-box; font-size: 14px;
+        }
+        input:focus { outline: none; border-color: #00f0ff; }
+        button {
+            width: 100%; padding: 14px; background: #00f0ff; border: none;
+            color: #000; font-weight: bold; border-radius: 10px;
+            cursor: pointer; font-size: 16px; transition: 0.2s;
+        }
+        button:hover { background: #55f7ff; }
+        .status { color: #ff0055; font-size: 13px; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
 
+    <div class="card" id="form-card" style="display: none;">
+        <h2>Username сонгох</h2>
+        <p>Та өөрийн давтагдашгүй хаягийг үүсгэнэ үү. Дараа нь солиход 7 хоногийн cooldown-той байна.</p>
+        <div class="group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Жишээ нь: devnmd" required>
+        </div>
+        <div class="group">
+            <label>Бүтэн нэр (Display Name)</label>
+            <input type="text" id="name" placeholder="Таны нэр" required>
+        </div>
+        <button onclick="createProfile()">Хаяг үүсгэх</button>
+        <div class="status" id="status-msg"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let sessionUser = null;
+
+        async function init() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                window.location.href = '/register';
+                return;
+            }
+            sessionUser = user;
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('username')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            if (profile) {
+                // Хэрэв аль хэдийн хаягтай бол шууд settings рүү чиглүүлнэ
+                window.location.href = '/settings';
+            } else {
+                document.getElementById('form-card').style.display = 'block';
+                
+                // Санах ойд хадгалсан нэр байвал автоматаар бөглөх
+                const claimed = localStorage.getItem('claim_username');
+                if (claimed) {
+                    document.getElementById('username').value = claimed;
+                }
+                
+                // Discord бүтэн нэрийг авч тавих
+                if (user.user_metadata && user.user_metadata.full_name) {
+                    document.getElementById('name').value = user.user_metadata.full_name;
+                }
+            }
+        }
+
+        async function createProfile() {
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            const name = document.getElementById('name').value.trim();
+            const status = document.getElementById('status-msg');
+
+            if (!username || !name) {
+                status.innerText = "Бүх талбарыг бөглөнө үү.";
+                return;
+            }
+
+            const regex = /^[a-zA-Z0-9_-]+$/;
+            if (!regex.test(username)) {
+                status.innerText = "Username зөвхөн англи үсэг, тоо, зураас агуулна.";
+                return;
+            }
+
+            status.innerText = "Хадгалж байна...";
+
+            let userIp = "Unknown";
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                userIp = data.ip;
+            } catch (e) {}
+
+            const makeAdmin = (username === 'devnmd');
+
+            const { error } = await supabaseClient.from('profiles').insert([{
+                id: sessionUser.id,
+                username,
+                name,
+                ip_address: userIp,
+                is_admin: makeAdmin
+            }]);
+
+            if (error) {
+                status.innerText = "Алдаа: Энэ Username аль хэдийн бүртгэгдсэн байна!";
+            } else {
+                localStorage.setItem('devnmd_username', username);
+                localStorage.removeItem('claim_username'); // Хэрэглэсэн тул устгана
+                status.innerText = "Амжилттай үүслээ! Шилжиж байна...";
+                setTimeout(() => {
+                    window.location.href = '/settings';
+                }, 1000);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

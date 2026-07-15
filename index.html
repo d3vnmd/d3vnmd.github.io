@@ -27,7 +27,6 @@
             cursor: var(--cursor-type) !important;
             perspective: 1000px;
         }
-        /* Арын фон тохиргоо */
         #bg-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -41,7 +40,6 @@
             object-fit: cover;
             z-index: -2;
         }
-        /* Click to Enter Overlay */
         #enter-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -63,7 +61,6 @@
             50% { opacity: 1; }
             100% { opacity: 0.4; }
         }
-        /* 3D Карт */
         .container { 
             width: 100%; 
             max-width: 420px; 
@@ -111,7 +108,6 @@
             color: #fff; font-size: 11px; padding: 4px 10px;
             border-radius: 20px; font-weight: bold; text-transform: uppercase;
         }
-        /* Хөгжим Тоглуулагч (Зүүн доор) */
         #music-overlay {
             position: fixed;
             bottom: 20px; left: 20px;
@@ -129,7 +125,6 @@
             width: 80px;
             accent-color: var(--accent-color);
         }
-        /* Хөвөгч Settings Товч */
         #settings-shortcut-btn {
             position: fixed;
             top: 20px; right: 20px;
@@ -162,7 +157,6 @@
         <div class="profile-card" id="card">Уншиж байна...</div>
     </div>
 
-    <!-- Хөгжим тоглуулагч -->
     <div id="music-overlay" style="display: none;">
         <span style="font-size:14px;">🎵 Music:</span>
         <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5" oninput="changeVolume(this.value)">
@@ -219,7 +213,6 @@
                         return;
                     }
 
-                    // Шинэ тохиргоонуудыг ачаалах
                     document.documentElement.style.setProperty('--bg-blur', `${user.bg_blur || 10}px`);
                     document.documentElement.style.setProperty('--bg-opacity', user.bg_opacity || 0.6);
                     document.documentElement.style.setProperty('--accent-color', user.accent_color || '#00f0ff');
@@ -230,7 +223,6 @@
                         document.documentElement.style.setProperty('--cursor-type', `url(${user.custom_cursor}), auto`);
                     }
 
-                    // Арын фон шалгах
                     if (user.bg_type === 'video' && user.background_url) {
                         const vid = document.getElementById('bg-video');
                         vid.src = user.background_url;
@@ -239,7 +231,6 @@
                         document.getElementById('bg-container').style.backgroundImage = `url(${user.background_url})`;
                     }
 
-                    // Өөрийн хуудас мөн эсэхийг шалгах (Шорткат Settings товч харуулах)
                     const { data: { user: loggedInUser } } = await supabaseClient.auth.getUser();
                     if (loggedInUser && loggedInUser.id === user.id) {
                         document.getElementById('settings-shortcut-btn').style.display = 'block';
@@ -251,7 +242,6 @@
                         document.getElementById('music-overlay').style.display = 'flex';
                     }
 
-                    // Сошиал Линкүүд унших
                     let linksHTML = '';
                     const socials = user.socials || {};
                     for (const [platform, value] of Object.entries(socials)) {
@@ -276,7 +266,14 @@
                     init3DTilt();
 
                 } else {
-                    container.innerHTML = `<div class="profile-card"><h2>404 Олдоогүй</h2></div>`;
+                    // ХЭРЭГЛЭГЧ ОЛДОХГҮЙ ҮЕД ЧИГЛҮҮЛЭХ ШИНЭЧЛЭЛТ
+                    container.innerHTML = `
+                        <div class="profile-card">
+                            <h2 style="color: #ff007f;">404 Олдоогүй</h2>
+                            <p style="color: #888;">"${username}" нэртэй хэрэглэгч бүртгэгдээгүй байна.</p>
+                            <a href="/register?claim=${username}" class="link-btn" style="display:inline-block; margin-top:15px; text-decoration:none;">Энэ нэрийг авах</a>
+                        </div>
+                    `;
                 }
             } catch (err) {
                 console.error(err);
@@ -306,7 +303,6 @@
             }
         }
 
-        // 3D Карт Хөдөлгөөний Логик
         function init3DTilt() {
             const card = document.getElementById('card');
             document.addEventListener('mousemove', (e) => {
