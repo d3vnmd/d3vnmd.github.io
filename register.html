@@ -112,7 +112,6 @@
         let num1 = 0, num2 = 0, correctAnswer = 0;
         let deviceIp = "Unknown";
 
-        // IP хаяг шалгаж авах функц
         async function fetchIpAddress() {
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
@@ -213,7 +212,6 @@
                     status.innerText = "Алдаа: " + error.message;
                     btn.disabled = false;
                 } else {
-                    // IP хаягийг хадгалахад бэлдэх
                     localStorage.setItem('temp_user_ip', deviceIp);
                     status.innerText = "Бүртгэл амжилттай! Шилжиж байна...";
                     setTimeout(() => {
