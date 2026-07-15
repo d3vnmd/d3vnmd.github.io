@@ -42,19 +42,34 @@
             cursor: pointer; font-size: 16px; transition: 0.2s;
         }
         button:hover { background: #b33ff3; }
+        .back-btn { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #888; margin-top: 10px; }
+        .back-btn:hover { background: rgba(255,255,255,0.05); color: #fff;}
         .status { color: #ff416c; font-size: 13px; margin-top: 15px; font-weight: bold;}
     </style>
 </head>
 <body>
 
-    <div class="card">
+    <!-- Алхам 1: Имэйл оруулах хэсэг -->
+    <div class="card" id="email-step">
         <h2>devnmd-д нэвтрэх</h2>
-        <p>Өөрийн имэйл хаягаа оруулаад нэвтрэх линк хүлээн авна уу. Тэр линк дээр дараад шууд хуудсаа үүсгэх боломжтой.</p>
+        <p>Өөрийн имэйл хаягаа оруулан 6 оронтой баталгаажуулах код хүлээн авна уу.</p>
         <div class="group">
             <input type="email" id="email" placeholder="Таны имэйл хаяг" required>
         </div>
-        <button id="send-btn" onclick="sendMagicLink()">Нэвтрэх линк илгээх</button>
+        <button onclick="sendOtp()">Код илгээх</button>
         <div class="status" id="email-status"></div>
+    </div>
+
+    <!-- Алхам 2: Код оруулж баталгаажуулах хэсэг -->
+    <div class="card" id="code-step" style="display: none;">
+        <h2>Баталгаажуулах</h2>
+        <p>Таны имэйл рүү илгээсэн 6 оронтой баталгаажуулах кодыг оруулна уу.</p>
+        <div class="group">
+            <input type="text" id="otp-code" placeholder="6 оронтой код" required maxlength="6">
+        </div>
+        <button onclick="verifyOtp()">Баталгаажуулах</button>
+        <button class="back-btn" onclick="showEmailStep()">Буцах</button>
+        <div class="status" id="code-status"></div>
     </div>
 
     <script>
@@ -62,33 +77,66 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function sendMagicLink() {
+        let userEmail = "";
+
+        async function sendOtp() {
             const emailInput = document.getElementById('email');
             const status = document.getElementById('email-status');
-            const btn = document.getElementById('send-btn');
-            const email = emailInput.value.trim();
+            userEmail = emailInput.value.trim();
 
-            if (!email) {
+            if (!userEmail) {
                 status.innerText = "Имэйл хаягаа оруулна уу.";
                 return;
             }
 
-            status.innerText = "Илгээж байна...";
-            btn.disabled = true;
+            status.innerText = "Код илгээж байна...";
 
+            // OTP Илгээх функц
             const { error } = await supabaseClient.auth.signInWithOtp({
-                email: email,
-                options: {
-                    emailRedirectTo: window.location.origin + '/settings.html'
-                }
+                email: userEmail
             });
 
             if (error) {
                 status.innerText = "Алдаа: " + error.message;
-                btn.disabled = false;
             } else {
-                status.innerText = "Имэйл рүү тань линк илгээлээ! Имэйлээ шалгана уу.";
+                status.innerText = "";
+                document.getElementById('email-step').style.display = 'none';
+                document.getElementById('code-step').style.display = 'block';
             }
+        }
+
+        async function verifyOtp() {
+            const tokenInput = document.getElementById('otp-code');
+            const status = document.getElementById('code-status');
+            const token = tokenInput.value.trim();
+
+            if (!token) {
+                status.innerText = "Кодоо оруулна уу.";
+                return;
+            }
+
+            status.innerText = "Шалгаж байна...";
+
+            // Оруулсан кодыг шалгах функц
+            const { error } = await supabaseClient.auth.verifyOtp({
+                email: userEmail,
+                token: token,
+                type: 'email'
+            });
+
+            if (error) {
+                status.innerText = "Код буруу эсвэл хугацаа нь дууссан байна.";
+            } else {
+                status.innerText = "Нэвтэрлээ! Шилжиж байна...";
+                setTimeout(() => {
+                    window.location.href = '/settings.html';
+                }, 1000);
+            }
+        }
+
+        function showEmailStep() {
+            document.getElementById('email-step').style.display = 'block';
+            document.getElementById('code-step').style.display = 'none';
         }
     </script>
 </body>
