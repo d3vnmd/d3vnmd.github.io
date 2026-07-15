@@ -3,58 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Username Сонгох | devnmd</title>
+    <title>devnmd</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --bg-blur: 10px;
+            --bg-opacity: 0.6;
+            --accent-color: #00f0ff;
+            --text-color: #ffffff;
+            --font-family: 'Segoe UI', sans-serif;
+            --cursor-type: default;
+        }
         body {
-            background-color: #030307; color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0;
+            background-color: #030307;
+            color: var(--text-color);
+            font-family: var(--font-family);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            cursor: var(--cursor-type) !important;
+            perspective: 1000px;
         }
-        .card {
-            background: rgba(10, 10, 18, 0.7);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 20px; padding: 35px;
-            width: 100%; max-width: 380px;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+        /* Арын фон тохиргоо (GIF болон Зураг дэмжинэ) */
+        #bg-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            pointer-events: none;
+        }
+        #bg-video {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            pointer-events: none;
+        }
+        /* Click to Enter Overlay */
+        #enter-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #030307;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color);
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+        /* 3D Карт */
+        .container { 
+            width: 100%; 
+            max-width: 420px; 
+            padding: 20px;
+            transform-style: preserve-3d;
             box-sizing: border-box;
+        }
+        .profile-card {
+            background: rgba(10, 10, 18, var(--bg-opacity));
+            border: 1px solid var(--accent-color);
+            border-radius: 24px;
+            padding: 40px 25px;
             text-align: center;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+            backdrop-filter: blur(var(--bg-blur));
+            -webkit-backdrop-filter: blur(var(--bg-blur));
+            transform: translateZ(20px);
+            transition: transform 0.1s ease-out;
+            position: relative;
+            z-index: 5;
         }
-        h2 { color: #00f0ff; margin-bottom: 10px; }
-        p { color: #8a8a9e; font-size: 14px; margin-bottom: 25px; }
-        .group { margin-bottom: 20px; text-align: left; }
-        label { display: block; font-size: 11px; color: #8a8a9e; margin-bottom: 6px; font-weight: bold; text-transform: uppercase; }
-        input {
-            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px;
-            color: white; box-sizing: border-box; font-size: 14px;
+        .avatar {
+            width: 115px; height: 115px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
         }
-        input:focus { outline: none; border-color: #00f0ff; }
-        button {
-            width: 100%; padding: 14px; background: #00f0ff; border: none;
-            color: #000; font-weight: bold; border-radius: 10px;
-            cursor: pointer; font-size: 16px; transition: 0.2s;
+        .name { font-size: 26px; font-weight: 800; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .username { font-size: 14px; color: var(--accent-color); font-weight: 700; margin-bottom: 20px; }
+        .bio { font-size: 14px; color: #a1a1b3; margin-bottom: 30px; line-height: 1.6; }
+        .links-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;}
+        
+        .link-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: white; padding: 15px; border-radius: 14px;
+            text-decoration: none; font-weight: 600; font-size: 14px;
+            transition: all 0.25s ease-in-out;
+            position: relative;
+            z-index: 100;
+            pointer-events: auto !important;
         }
-        button:hover { background: #55f7ff; }
-        .status { color: #ff0055; font-size: 13px; margin-top: 15px; font-weight: bold; }
+        .link-btn:hover {
+            background: var(--accent-color); color: #000; border-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+        }
+        .badge-pill {
+            background: linear-gradient(45deg, #00f0ff, #bd00ff);
+            color: #fff; font-size: 11px; padding: 4px 10px;
+            border-radius: 20px; font-weight: bold; text-transform: uppercase;
+        }
+        .like-btn {
+            background: rgba(255, 0, 127, 0.1);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+            color: #ff007f; padding: 12px 24px; border-radius: 14px;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
+            box-shadow: 0 0 10px rgba(255,0,127,0.1);
+            position: relative;
+            z-index: 100;
+            pointer-events: auto !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .like-btn:hover {
+            background: #ff007f; color: white; transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255,0,127,0.4);
+        }
+        /* Хөгжим Тоглуулагч (Зүүн доор) */
+        #music-overlay {
+            position: fixed;
+            bottom: 20px; left: 20px;
+            background: rgba(10, 10, 18, 0.85);
+            border: 1px solid var(--accent-color);
+            border-radius: 15px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            box-shadow: 0 0 15px rgba(0,240,255,0.2);
+        }
+        #music-overlay input[type="range"] {
+            width: 80px;
+            accent-color: var(--accent-color);
+        }
+        /* Хөвөгч Settings Товч */
+        #settings-shortcut-btn {
+            position: fixed;
+            top: 20px; right: 20px;
+            background: rgba(10, 10, 18, 0.8);
+            border: 1px solid var(--accent-color);
+            color: #fff; padding: 10px 20px;
+            border-radius: 12px; font-weight: bold;
+            text-decoration: none; display: none;
+            z-index: 1000;
+            transition: 0.2s;
+        }
+        #settings-shortcut-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        /* 📱 ГАР УТАСНЫ ЗАГВАР ШИНЭЧЛЭЛТ (Responsive Mobile) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                align-items: center;
+            }
+            .container {
+                max-width: 100%;
+                padding: 10px;
+            }
+            .profile-card {
+                padding: 30px 15px;
+                border-radius: 18px;
+            }
+            .avatar {
+                width: 95px; height: 95px;
+                margin-bottom: 15px;
+            }
+            .name { font-size: 22px; }
+            .bio { font-size: 13px; margin-bottom: 20px; }
+            .link-btn { padding: 12px; font-size: 13px; }
+            #music-overlay {
+                bottom: 10px; left: 10px; right: 10px;
+                width: calc(100% - 40px);
+                justify-content: space-between;
+            }
+            #settings-shortcut-btn {
+                top: 10px; right: 10px; padding: 8px 14px; font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="card" id="form-card" style="display: none;">
-        <h2>Username сонгох</h2>
-        <p>Та өөрийн давтагдашгүй хаягийг үүсгэнэ үү. Дараа нь солиход 7 хоногийн cooldown-той байна.</p>
-        <div class="group">
-            <label>Username</label>
-            <input type="text" id="username" placeholder="Жишээ нь: devnmd" required>
-        </div>
-        <div class="group">
-            <label>Бүтэн нэр (Display Name)</label>
-            <input type="text" id="name" placeholder="Таны нэр" required>
-        </div>
-        <button onclick="createProfile()">Хаяг үүсгэх</button>
-        <div class="status" id="status-msg"></div>
+    <div id="bg-container"></div>
+    <video id="bg-video" autoplay loop muted style="display:none;"></video>
+
+    <a href="/settings" id="settings-shortcut-btn">⚙️ Settings</a>
+
+    <div id="enter-overlay" style="display: none;" onclick="startBiolink()">
+        [ Click to enter ]
+    </div>
+
+    <div class="container" id="main-container">
+        <div class="profile-card" id="card">Уншиж байна...</div>
+    </div>
+
+    <div id="music-overlay" style="display: none;">
+        <span style="font-size:14px;">🎵 Music:</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5" oninput="changeVolume(this.value)">
     </div>
 
     <script>
@@ -62,89 +229,188 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let sessionUser = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        let username = urlParams.get('u');
 
-        async function init() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                window.location.href = '/register';
-                return;
-            }
-            sessionUser = user;
-
-            const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('username')
-                .eq('id', user.id)
-                .maybeSingle();
-
-            if (profile) {
-                // Хэрэв аль хэдийн хаягтай бол шууд settings рүү чиглүүлнэ
-                window.location.href = '/settings';
-            } else {
-                document.getElementById('form-card').style.display = 'block';
-                
-                // Санах ойд хадгалсан нэр байвал автоматаар бөглөх
-                const claimed = localStorage.getItem('claim_username');
-                if (claimed) {
-                    document.getElementById('username').value = claimed;
-                }
-                
-                // Discord бүтэн нэрийг авч тавих
-                if (user.user_metadata && user.user_metadata.full_name) {
-                    document.getElementById('name').value = user.user_metadata.full_name;
-                }
-            }
+        if (username) {
+            username = username.replace(/\/$/, "").toLowerCase();
+            window.history.replaceState({}, document.title, window.location.origin + "/" + username);
         }
 
-        async function createProfile() {
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            const name = document.getElementById('name').value.trim();
-            const status = document.getElementById('status-msg');
+        const container = document.getElementById('main-container');
+        let audioPlayer = null;
 
-            if (!username || !name) {
-                status.innerText = "Бүх талбарыг бөглөнө үү.";
-                return;
-            }
+        if (!username || username === "") {
+            container.innerHTML = `
+                <div class="profile-card">
+                    <h2 style="background: linear-gradient(45deg, #00f0ff, #bd00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size:36px; font-weight:900;">devnmd</h2>
+                    <p style="color: #888;">Загварлаг нэрийн хуудсаа хурдан үүсгэж эхэл.</p>
+                    <a href="/register" class="link-btn" style="display:inline-block; margin-top:15px; text-decoration:none;">Одоо нэгдэх</a>
+                </div>
+            `;
+        } else {
+            document.getElementById('enter-overlay').style.display = 'flex';
+            fetchUserProfile();
+        }
 
-            const regex = /^[a-zA-Z0-9_-]+$/;
-            if (!regex.test(username)) {
-                status.innerText = "Username зөвхөн англи үсэг, тоо, зураас агуулна.";
-                return;
-            }
-
-            status.innerText = "Хадгалж байна...";
-
-            let userIp = "Unknown";
+        async function fetchUserProfile() {
             try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                userIp = data.ip;
-            } catch (e) {}
+                const { data: user, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('username', username)
+                    .maybeSingle();
 
-            const makeAdmin = (username === 'devnmd');
+                if (error) throw error;
 
-            const { error } = await supabaseClient.from('profiles').insert([{
-                id: sessionUser.id,
-                username,
-                name,
-                ip_address: userIp,
-                is_admin: makeAdmin
-            }]);
+                if (user) {
+                    if (user.is_banned) {
+                        document.getElementById('enter-overlay').style.display = 'none';
+                        container.innerHTML = `
+                            <div class="profile-card" style="border-color: #ff0055;">
+                                <h2 style="color: #ff0055;">БАНДАСАН ХЭРЭГЛЭГЧ</h2>
+                                <p style="color: #888;">Энэ хаяг дүрмийн бус үйлдэл гаргасан тул хаагдсан байна.</p>
+                            </div>
+                        `;
+                        return;
+                    }
 
-            if (error) {
-                status.innerText = "Алдаа: Энэ Username аль хэдийн бүртгэгдсэн байна!";
-            } else {
-                localStorage.setItem('devnmd_username', username);
-                localStorage.removeItem('claim_username'); // Хэрэглэсэн тул устгана
-                status.innerText = "Амжилттай үүслээ! Шилжиж байна...";
-                setTimeout(() => {
-                    window.location.href = '/settings';
-                }, 1000);
+                    // CSS Variables ачаалах
+                    document.documentElement.style.setProperty('--bg-blur', `${user.bg_blur || 10}px`);
+                    document.documentElement.style.setProperty('--bg-opacity', user.bg_opacity || 0.6);
+                    document.documentElement.style.setProperty('--accent-color', user.accent_color || '#00f0ff');
+                    document.documentElement.style.setProperty('--text-color', user.text_color || '#ffffff');
+                    document.documentElement.style.setProperty('--font-family', user.font_family || 'Segoe UI');
+                    
+                    if (user.custom_cursor && user.custom_cursor !== 'default') {
+                        document.documentElement.style.setProperty('--cursor-type', `url(${user.custom_cursor}), auto`);
+                    }
+
+                    // 🖼️ Видео болон Зураг/GIF арын фоныг уншиж харуулах
+                    if (user.background_url) {
+                        const isVideo = user.bg_type === 'video' || user.background_url.endsWith('.mp4') || user.background_url.endsWith('.webm');
+                        if (isVideo) {
+                            const vid = document.getElementById('bg-video');
+                            vid.src = user.background_url;
+                            vid.style.display = 'block';
+                        } else {
+                            document.getElementById('bg-container').style.backgroundImage = `url(${user.background_url})`;
+                        }
+                    }
+
+                    // Өөрийн хуудас мөн бол тохиргооны товчлуур шууд харуулах
+                    const { data: { user: loggedInUser } } = await supabaseClient.auth.getUser();
+                    if (loggedInUser && loggedInUser.id === user.id) {
+                        document.getElementById('settings-shortcut-btn').style.display = 'block';
+                    }
+
+                    if (user.music_url) {
+                        audioPlayer = new Audio(user.music_url);
+                        audioPlayer.loop = true;
+                        document.getElementById('music-overlay').style.display = 'flex';
+                    }
+
+                    // 🔗 Найдвартай Сошиал Линк Форматлагч
+                    let linksHTML = '';
+                    const socials = user.socials || {};
+                    for (const [platform, value] of Object.entries(socials)) {
+                        if (value) {
+                            let url = value;
+                            let onclick = '';
+                            if (platform === 'discord') {
+                                if (!value.startsWith('http')) {
+                                    url = '#';
+                                    onclick = `onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID санах ойд хуулагдлаа: ${value}'); return false;"`;
+                                }
+                            } else if (platform === 'instagram' && !value.startsWith('http')) {
+                                url = `https://instagram.com/${value}`;
+                            } else if (platform === 'github' && !value.startsWith('http')) {
+                                url = `https://github.com/${value}`;
+                            } else if (platform === 'youtube' && !value.startsWith('http')) {
+                                url = `https://youtube.com/${value.startsWith('@') ? value : '@' + value}`;
+                            } else if (platform === 'steam' && !value.startsWith('http')) {
+                                url = `https://steamcommunity.com/id/${value}`;
+                            }
+                            linksHTML += `<a href="${url}" ${onclick} target="_blank" class="link-btn">${platform.toUpperCase()}</a>`;
+                        }
+                    }
+
+                    container.innerHTML = `
+                        <div class="profile-card" id="card">
+                            <img src="${user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + username}" class="avatar" alt="Avatar">
+                            <div class="name">${user.name} ${user.badge ? `<span class="badge-pill">${user.badge}</span>` : ''}</div>
+                            <div class="username">@${username}</div>
+                            <div class="bio">${user.bio || 'Танилцуулга оруулаагүй байна.'}</div>
+                            <div class="links-container">
+                                ${linksHTML || '<p style="color: #444;">Холбоос байхгүй байна.</p>'}
+                            </div>
+                            <button class="like-btn" onclick="likeProfile(event)">❤️ Like: <span id="like-count">${user.likes_count || 0}</span></button>
+                        </div>
+                    `;
+
+                    init3DTilt();
+
+                } else {
+                    container.innerHTML = `
+                        <div class="profile-card">
+                            <h2 style="color: #ff007f;">404 Олдоогүй</h2>
+                            <p style="color: #888;">"${username}" нэртэй хэрэглэгч бүртгэгдээгүй байна.</p>
+                            <a href="/register?claim=${username}" class="link-btn" style="display:inline-block; margin-top:15px; text-decoration:none;">Энэ нэрийг авах</a>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error(err);
             }
         }
 
-        init();
+        function startBiolink() {
+            const overlay = document.getElementById('enter-overlay');
+            if (overlay) overlay.remove(); // Даралт хаахаас сэргийлж устгана
+            if (audioPlayer) audioPlayer.play().catch(e => console.log("Хөгжим тоглуулахыг хөтөч хаалаа."));
+        }
+
+        function changeVolume(val) {
+            if (audioPlayer) audioPlayer.volume = val;
+        }
+
+        async function likeProfile(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const likedKey = `liked_${username}`;
+            if (localStorage.getItem(likedKey)) {
+                alert("Та аль хэдийн Like дарсан байна!");
+                return;
+            }
+            const { error } = await supabaseClient.rpc('increment_likes', { profile_username: username });
+            if (error) {
+                console.error("Like error:", error);
+                alert("Лайк дарахад алдаа гарлаа: " + error.message);
+            } else {
+                localStorage.setItem(likedKey, 'true');
+                const count = document.getElementById('like-count');
+                if (count) {
+                    count.innerText = parseInt(count.innerText) + 1;
+                }
+            }
+        }
+
+        // 3D Карт Хөдөлгөөн (Гар утсан дээр унтарна)
+        function init3DTilt() {
+            const card = document.getElementById('card');
+            // Хэрэв гар утас эсвэл таблет байвал 3D хөдөлгөөнийг идэвхжүүлэхгүй
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                return; 
+            }
+            document.addEventListener('mousemove', (e) => {
+                if (!card) return;
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+        }
     </script>
 </body>
 </html>
