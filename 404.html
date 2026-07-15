@@ -4,8 +4,15 @@
     <meta charset="utf-8">
     <title>Уншиж байна...</title>
     <script type="text/javascript">
+      // Замын эхлэл ба төгсгөлийн налуу зураасыг арилгах
       var path = window.location.pathname.replace(/^\/|\/$/g, '');
-      if (path !== 'settings' && path !== 'register' && path !== 'username') {
+      var segments = path.split('/');
+      var firstSegment = segments[0].toLowerCase();
+      
+      // Телепорт хийхгүйгээр шууд нэвтрэх системүүд
+      var bypass = ['register', 'settings', 'username'];
+      
+      if (bypass.indexOf(firstSegment) === -1 && path !== '') {
           window.location.replace(window.location.origin + '/?u=' + path);
       }
     </script>

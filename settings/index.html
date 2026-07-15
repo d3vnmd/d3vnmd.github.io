@@ -14,12 +14,13 @@
         /* Зүүн талын Sidebar */
         .sidebar {
             width: 250px; background: #07070d;
-            border-right: 1px solid rgba(0, 240, 255, 0.1);
+            border-right: 1px solid rgba(138, 43, 226, 0.1);
             padding: 30px 20px; display: flex; flex-direction: column; gap: 10px;
+            box-sizing: border-box;
         }
         .brand {
-            font-size: 24px; font-weight: 900; color: #00f0ff;
-            margin-bottom: 30px; text-shadow: 0 0 10px rgba(0,240,255,0.3);
+            font-size: 24px; font-weight: 900; color: #bd00ff;
+            margin-bottom: 30px; text-shadow: 0 0 10px rgba(189,0,255,0.3);
             text-align: center;
         }
         .menu-btn {
@@ -29,10 +30,14 @@
             transition: 0.2s; display: flex; align-items: center; gap: 10px;
         }
         .menu-btn:hover, .menu-btn.active {
-            background: rgba(0, 240, 255, 0.05); color: #00f0ff;
+            background: rgba(189, 0, 255, 0.05); color: #bd00ff;
         }
         /* Баруун талын Үндсэн хэсэг */
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; box-sizing: border-box; }
+        .main-content { 
+            flex: 1; padding: 40px; overflow-y: auto; 
+            box-sizing: border-box; width: 100%; max-width: 100vw;
+            overflow-x: hidden;
+        }
         .tab-section { display: none; }
         .tab-section.active { display: block; }
         
@@ -44,47 +49,48 @@
         }
         .stat-card h4 { margin: 0 0 5px 0; color: #8a8a9e; font-size: 11px; text-transform: uppercase; }
         .stat-card p { margin: 0; font-size: 24px; font-weight: 800; color: #fff; }
-        .stat-card span { font-size: 11px; color: #bd00ff; }
+        .stat-card span { font-size: 11px; color: #00f0ff; }
 
         /* Картууд */
         .card {
-            background: #090911; border: 1px solid rgba(0, 240, 255, 0.05);
+            background: #090911; border: 1px solid rgba(138, 43, 226, 0.05);
             border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            box-sizing: border-box;
         }
-        h3 { margin-top: 0; color: #00f0ff; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px;}
+        h3 { margin-top: 0; color: #bd00ff; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px;}
         .group { margin-bottom: 15px; text-align: left;}
         label { display: block; font-size: 12px; color: #8a8a9e; margin-bottom: 6px; font-weight: bold; }
         input, textarea, select {
             width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; color: #fff; box-sizing: border-box;
         }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #00f0ff; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #bd00ff; }
         button {
-            background: #00f0ff; color: #000; border: none; padding: 12px 20px;
+            background: #bd00ff; color: #fff; border: none; padding: 12px 20px;
             border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
-        button:hover { background: #55f7ff; }
-        .save-btn { width: 100%; font-size: 16px; margin-top: 10px; background: linear-gradient(45deg, #00f0ff, #bd00ff); color: white;}
+        button:hover { background: #d033ff; }
+        .save-btn { width: 100%; font-size: 16px; margin-top: 10px; background: linear-gradient(45deg, #bd00ff, #00f0ff); color: white;}
         .cooldown-text { font-size: 11px; color: #ff0055; margin-top: 5px; display: block; }
         
-        /* Custom Links List */
         .custom-link-item {
             background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
             padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px;
         }
 
         /* 📱 ГАР УТАСНЫ ЭРТНИЙ ТӨГС ШИЙДЭЛ (Mobile Responsive) */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar {
-                width: 100%; border-right: none; border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+                width: 100%; border-right: none; border-bottom: 1px solid rgba(138, 43, 226, 0.1);
                 padding: 15px; box-sizing: border-box; flex-direction: row; overflow-x: auto;
                 white-space: nowrap; gap: 8px; justify-content: flex-start;
             }
             .brand { display: none; }
             .menu-btn { padding: 10px 14px; font-size: 12px; flex: 0 0 auto; }
-            .main-content { padding: 20px 15px; }
-            .stats-grid { gap: 15px; }
+            .main-content { padding: 20px 15px; width: 100%; }
+            .stats-grid { gap: 15px; grid-template-columns: 1fr; }
             .stat-card { padding: 15px; }
             .stat-card p { font-size: 20px; }
         }
@@ -98,11 +104,12 @@
         <button class="menu-btn" onclick="showTab('customize')">🎨 Загварчилгаа</button>
         <button class="menu-btn" onclick="showTab('links')">🔗 Холбоосууд</button>
         <button class="menu-btn" onclick="showTab('templates')">💎 Загварууд</button>
-        <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#bd00ff;">👁️ Миний хуудас</a>
+        <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#bd00ff; text-decoration:none;">👁️ Миний хуудас</a>
         <button class="menu-btn" style="color: #ff0055;" onclick="logout()">❌ Гарах</button>
     </div>
 
     <div class="main-content">
+        <!-- 1. ACCOUNT TAB -->
         <div id="tab-account" class="tab-section active">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -125,7 +132,7 @@
             <div class="card">
                 <h3>Хаяг Төлөв</h3>
                 <div class="group">
-                    <label>Нэр солих (7 хоногт нэг удаа)</label>
+                    <label>Нэр солих (7 хоногийн хязгаартай)</label>
                     <input type="text" id="new-username" placeholder="Шинэ нэр">
                     <span id="username-cooldown-timer" class="cooldown-text"></span>
                     <button style="margin-top:10px;" onclick="changeUsername()">Шинэчлэх</button>
@@ -145,6 +152,7 @@
             </div>
         </div>
 
+        <!-- 2. CUSTOMIZE TAB -->
         <div id="tab-customize" class="tab-section">
             <div class="card">
                 <h3>Арын Фон Засах</h3>
@@ -192,6 +200,7 @@
             </div>
         </div>
 
+        <!-- 3. LINKS TAB -->
         <div id="tab-links" class="tab-section">
             <div class="card">
                 <h3>Ухаалаг Сошиал Холбоос (Зөвхөн нэрээ бичнэ)</h3>
@@ -205,18 +214,19 @@
 
             <div class="card">
                 <h3>Дурын холбоос нэмэх (Custom Links)</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <input type="text" id="custom-title" placeholder="Товчны нэр">
-                    <input type="text" id="custom-url" placeholder="Холбоос линк (https://...)">
+                <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                    <input type="text" id="custom-title" placeholder="Товчны нэр" style="flex:1;">
+                    <input type="text" id="custom-url" placeholder="Линк (https://...)" style="flex:2;">
                     <button onclick="addCustomLink()">Нэмэх</button>
                 </div>
                 <div id="custom-links-list"></div>
             </div>
         </div>
 
+        <!-- 4. TEMPLATES TAB -->
         <div id="tab-templates" class="tab-section">
             <div class="card">
-                <h3>Бэлэн Загварууд</h3>
+                <h3>Системийн бэлэн загварууд</h3>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button onclick="applyTemplate('cyberpunk')" style="background:#00f0ff; color:#000;">Cyberpunk</button>
                     <button onclick="applyTemplate('obsidian')" style="background:#111; color:#fff;">Obsidian</button>
@@ -224,13 +234,16 @@
                 </div>
             </div>
 
+            <!-- Нийтийн Загвар систем -->
             <div class="card">
-                <h3>Өөрийн загварыг хадгалах</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <input type="text" id="template-name" placeholder="Загварын нэр">
-                    <button onclick="saveCurrentAsTemplate()">💾 Загвар хадгалах</button>
+                <h3>Нийтийн загвар хуваалцах (Community Shared)</h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                    <input type="text" id="template-name" placeholder="Загварын нэр" style="flex:1;">
+                    <button onclick="shareWithCommunity()">Нийтэд хуваалцах</button>
                 </div>
-                <div id="user-templates-list"></div>
+                <div id="community-templates-list">
+                    <!-- Бусад хүмүүсийн хуваалцсан загвар харагдана -->
+                </div>
             </div>
         </div>
 
@@ -246,7 +259,6 @@
         let sessionUser = null;
         let userProfile = null;
         let myCustomLinks = [];
-        let mySavedTemplates = [];
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -287,7 +299,6 @@
             document.getElementById('font-family').value = userProfile.font_family || 'Segoe UI';
             document.getElementById('custom-cursor').value = userProfile.custom_cursor || '';
 
-            // Сошиал унших
             const socials = userProfile.socials || {};
             document.getElementById('link-tiktok').value = socials.tiktok || '';
             document.getElementById('link-instagram').value = socials.instagram || '';
@@ -296,18 +307,16 @@
             document.getElementById('link-steam').value = socials.steam || '';
             document.getElementById('link-discord').value = socials.discord || '';
 
-            // Custom links & Templates
             myCustomLinks = userProfile.custom_links || [];
-            mySavedTemplates = userProfile.user_templates || [];
             
             renderCustomLinks();
-            renderUserTemplates();
+            fetchCommunityTemplates();
             toggleBgInputs();
         }
 
         function showTab(tabId) {
             document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.sidebar .menu-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             event.target.classList.add('active');
         }
@@ -354,12 +363,12 @@
             if (error) {
                 alert("Алдаа: Сонгосон нэр бүртгэлтэй эсвэл хязгаар дуусаагүй байна!");
             } else {
-                alert("Username амжилттай шинэчлэгдлээ!");
+                alert("Username амжилттай солигдлоо!");
                 window.location.reload();
             }
         }
 
-        // Custom Links logic
+        // Custom Links
         function renderCustomLinks() {
             const list = document.getElementById('custom-links-list');
             list.innerHTML = '';
@@ -390,30 +399,37 @@
             renderCustomLinks();
         }
 
-        // Custom user-created templates
-        function renderUserTemplates() {
-            const list = document.getElementById('user-templates-list');
-            list.innerHTML = '';
-            mySavedTemplates.forEach((tpl, idx) => {
-                const div = document.createElement('div');
-                div.className = 'custom-link-item';
-                div.innerHTML = `
-                    <div><strong>${tpl.name}</strong></div>
-                    <div>
-                        <button onclick="applyUserTemplate(${idx})" style="background:#00f0ff; color:#000; padding:5px 10px; font-size:12px; margin-right:5px;">Идэвхжүүлэх</button>
-                        <button onclick="removeUserTemplate(${idx})" style="background:#ff0055; color:#fff; padding:5px 10px; font-size:12px;">Устгах</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
+        // 💎 Нийтийн загварын систем
+        async function fetchCommunityTemplates() {
+            const list = document.getElementById('community-templates-list');
+            list.innerHTML = 'Загварыг уншиж байна...';
+
+            const { data, error } = await supabaseClient
+                .from('community_templates')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (!error && data) {
+                list.innerHTML = '';
+                data.forEach(tpl => {
+                    const div = document.createElement('div');
+                    div.className = 'custom-link-item';
+                    div.innerHTML = `
+                        <div><strong>${tpl.template_name}</strong> <span style="color:#8a8a9e; font-size:11px;">(Бүтээгч: @${tpl.creator_username})</span></div>
+                        <button onclick='applyCommunityConfig(${JSON.stringify(tpl.config)})' style="background:#00f0ff; color:#000; padding:5px 10px; font-size:12px;">Ашиглах</button>
+                    `;
+                    list.appendChild(div);
+                });
+            } else {
+                list.innerHTML = 'Хуваалцсан загвар одоогоор байхгүй байна.';
+            }
         }
 
-        async function saveCurrentAsTemplate() {
+        async function shareWithCommunity() {
             const name = document.getElementById('template-name').value.trim();
             if (!name) return;
 
             const currentConfig = {
-                name: name,
                 bg_type: document.getElementById('bg-type').value,
                 bg_blur: document.getElementById('bg-blur').value,
                 bg_opacity: document.getElementById('bg-opacity').value,
@@ -423,48 +439,42 @@
                 music_url: userProfile.music_url
             };
 
-            mySavedTemplates.push(currentConfig);
-            
             const { error } = await supabaseClient
-                .from('profiles')
-                .update({ user_templates: mySavedTemplates })
-                .eq('id', sessionUser.id);
+                .from('community_templates')
+                .insert([{
+                    creator_id: sessionUser.id,
+                    creator_username: userProfile.username,
+                    template_name: name,
+                    config: currentConfig
+                }]);
 
-            if (!error) {
-                alert(`"${name}" загвар амжилттай хадгалагдлаа!`);
+            if (error) {
+                alert("Алдаа: Загварыг хуваалцаж чадсангүй.");
+            } else {
+                alert(`"${name}" загварыг амжилттай хуваалцлаа!`);
                 document.getElementById('template-name').value = '';
-                renderUserTemplates();
+                fetchCommunityTemplates();
             }
         }
 
-        async function applyUserTemplate(idx) {
-            const tpl = mySavedTemplates[idx];
+        async function applyCommunityConfig(config) {
             const { error } = await supabaseClient
                 .from('profiles')
                 .update({
-                    bg_type: tpl.bg_type,
-                    bg_blur: tpl.bg_blur,
-                    bg_opacity: tpl.bg_opacity,
-                    font_family: tpl.font_family,
-                    custom_cursor: tpl.custom_cursor,
-                    background_url: tpl.background_url,
-                    music_url: tpl.music_url
+                    bg_type: config.bg_type,
+                    bg_blur: config.bg_blur,
+                    bg_opacity: config.bg_opacity,
+                    font_family: config.font_family,
+                    custom_cursor: config.custom_cursor,
+                    background_url: config.background_url,
+                    music_url: config.music_url
                 })
                 .eq('id', sessionUser.id);
 
             if (!error) {
-                alert(`"${tpl.name}" загвар идэвхжлээ!`);
+                alert("Сонгосон загварыг амжилттай ашиглалаа!");
                 window.location.reload();
             }
-        }
-
-        async function removeUserTemplate(idx) {
-            mySavedTemplates.splice(idx, 1);
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ user_templates: mySavedTemplates })
-                .eq('id', sessionUser.id);
-            if (!error) renderUserTemplates();
         }
 
         async function applyTemplate(theme) {
@@ -479,7 +489,7 @@
 
             const { error } = await supabaseClient.from('profiles').update(config).eq('id', sessionUser.id);
             if (!error) {
-                alert("Загвар амжилттай солигдлоо!");
+                alert("Загвар солигдлоо!");
                 window.location.reload();
             }
         }
