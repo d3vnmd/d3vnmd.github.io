@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Нэвтрэх / Бүртгүүлэх | devnmd</title>
+    <title>Нэвтрэх | devnmd</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -20,87 +20,76 @@
             background: rgba(10, 10, 18, 0.7);
             border: 1px solid rgba(0, 240, 255, 0.2);
             border-radius: 20px;
-            padding: 35px;
+            padding: 40px;
+            text-align: center;
             width: 100%;
             max-width: 380px;
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
             box-sizing: border-box;
         }
-        .tabs {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .brand-logo {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00f0ff, #bd00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(0,240,255,0.2);
         }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            color: #555566;
+        p {
+            color: #8a8a9e;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .discord-btn {
+            background: #5865F2;
+            color: #ffffff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: bold;
-            transition: 0.2s;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
         }
-        .tab.active {
-            color: #00f0ff;
-            border-bottom: 2px solid #00f0ff;
+        .discord-btn:hover {
+            background: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
         }
-        .group {
-            margin-bottom: 15px;
-            text-align: left;
+        .discord-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
         }
-        label {
-            display: block; font-size: 11px; color: #8a8a9e;
-            margin-bottom: 5px; text-transform: uppercase; font-weight: bold;
+        .status {
+            color: #ff0055;
+            font-size: 13px;
+            margin-top: 20px;
+            font-weight: bold;
         }
-        input {
-            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px;
-            color: white; box-sizing: border-box; font-size: 14px;
-        }
-        input:focus { outline: none; border-color: #00f0ff; }
-        button {
-            width: 100%; padding: 14px; background: #00f0ff; border: none;
-            color: #000; font-weight: bold; border-radius: 10px;
-            cursor: pointer; font-size: 16px; transition: 0.2s; margin-top: 10px;
-        }
-        button:hover { background: #55f7ff; }
-        .captcha-container {
-            background: rgba(0, 240, 255, 0.05);
-            border: 1px dashed rgba(0, 240, 255, 0.3);
-            border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 15px;
-        }
-        .captcha-text { font-size: 16px; font-weight: bold; color: #00f0ff; margin-bottom: 8px; }
-        .status { color: #ff0055; font-size: 13px; margin-top: 15px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div class="tabs">
-            <div class="tab active" id="tab-login" onclick="switchTab('login')">Нэвтрэх</div>
-            <div class="tab" id="tab-register" onclick="switchTab('register')">Бүртгүүлэх</div>
-        </div>
-
-        <form id="authForm" onsubmit="handleAuth(event)">
-            <div class="group">
-                <label>Имэйл хаяг</label>
-                <input type="email" id="email" required placeholder="example@gmail.com">
-            </div>
-            
-            <div class="group">
-                <label>Нууц үг</label>
-                <input type="password" id="password" required placeholder="••••••••" minlength="6">
-            </div>
-
-            <div id="register-only-fields" style="display: none;">
-                <div class="captcha-container">
-                    <div class="captcha-text" id="captcha-question">Уншиж байна...</div>
-                    <input type="number" id="captcha-answer" placeholder="Хариуг оруулна уу" style="text-align: center;">
-                </div>
-            </div>
-
-            <button type="submit" id="submit-btn">Нэвтрэх</button>
-            <div class="status" id="status-msg"></div>
-        </form>
+        <div class="brand-logo">devnmd</div>
+        <p>Discord хаягаараа ганцхан даралтаар нэвтэрч, өөрийн нэрийн хуудсаа үнэгүй үүсгээрэй.</p>
+        
+        <button class="discord-btn" onclick="signInWithDiscord()">
+            <svg class="discord-icon" viewBox="0 0 127.14 96.36">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,68.43,68.43,0,0,1-10.5-5c.88-.65,1.72-1.34,2.53-2a75.58,75.58,0,0,0,73,0c.81.71,1.65,1.4,2.53,2a68.43,68.43,0,0,1-10.5,5,77.7,77.7,0,0,0,6.63,10.85,105.73,105.73,0,0,0,31-18.83C129.87,50.75,123.38,28,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+            </svg>
+            Discord-оор нэвтрэх
+        </button>
+        <div class="status" id="status-msg"></div>
     </div>
 
     <script>
@@ -108,22 +97,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let activeTab = "login";
-        let num1 = 0, num2 = 0, correctAnswer = 0;
-        let deviceIp = "Unknown";
-
-        async function fetchIpAddress() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                deviceIp = data.ip;
-            } catch (e) {
-                console.log("IP авах боломжгүй байна.");
-            }
-        }
-
         async function checkDeviceAndSession() {
-            await fetchIpAddress();
             const { data: { session } } = await supabaseClient.auth.getSession();
             
             if (session) {
@@ -138,101 +112,24 @@
                 } else {
                     window.location.href = '/settings.html';
                 }
-                return;
-            }
-
-            const savedUsername = localStorage.getItem('devnmd_username');
-            if (savedUsername) {
-                document.getElementById('status-msg').innerHTML = `
-                    Энэ төхөөрөмж дээр бүртгэлтэй байна: 
-                    <a href="/${savedUsername}" style="color: #00f0ff; font-weight: bold;">@${savedUsername}</a><br>
-                    Нэвтрэхийн тулд имэйл, нууц үгээ оруулна уу.
-                `;
             }
         }
 
         checkDeviceAndSession();
 
-        function generateCaptcha() {
-            num1 = Math.floor(Math.random() * 10) + 1;
-            num2 = Math.floor(Math.random() * 10) + 1;
-            correctAnswer = num1 + num2;
-            document.getElementById('captcha-question').innerText = `Бодно уу: ${num1} + ${num2} = ?`;
-        }
-
-        function switchTab(tab) {
-            activeTab = tab;
-            const loginTab = document.getElementById('tab-login');
-            const registerTab = document.getElementById('tab-register');
-            const registerFields = document.getElementById('register-only-fields');
-            const submitBtn = document.getElementById('submit-btn');
-            const statusMsg = document.getElementById('status-msg');
-
-            statusMsg.innerText = "";
-
-            if (tab === "login") {
-                loginTab.classList.add('active');
-                registerTab.classList.remove('active');
-                registerFields.style.display = 'none';
-                submitBtn.innerText = "Нэвтрэх";
-            } else {
-                registerTab.classList.add('active');
-                loginTab.classList.remove('active');
-                registerFields.style.display = 'block';
-                submitBtn.innerText = "Бүртгүүлэх";
-                generateCaptcha();
-            }
-        }
-
-        async function handleAuth(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+        async function signInWithDiscord() {
             const status = document.getElementById('status-msg');
-            const btn = document.getElementById('submit-btn');
-
-            status.innerText = "Уншиж байна...";
-            btn.disabled = true;
-
-            if (activeTab === "register") {
-                const userAnswer = parseInt(document.getElementById('captcha-answer').value);
-                if (userAnswer !== correctAnswer) {
-                    status.innerText = "Анти-Спам хариу буруу байна!";
-                    btn.disabled = false;
-                    generateCaptcha();
-                    return;
+            status.innerText = "Шилжиж байна...";
+            
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'discord',
+                options: {
+                    redirectTo: window.location.origin + '/settings.html'
                 }
+            });
 
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password
-                });
-
-                if (error) {
-                    status.innerText = "Алдаа: " + error.message;
-                    btn.disabled = false;
-                } else {
-                    localStorage.setItem('temp_user_ip', deviceIp);
-                    status.innerText = "Бүртгэл амжилттай! Шилжиж байна...";
-                    setTimeout(() => {
-                        window.location.href = '/settings.html';
-                    }, 1000);
-                }
-            } else {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) {
-                    status.innerText = "Имэйл эсвэл нууц үг буруу байна.";
-                    btn.disabled = false;
-                } else {
-                    status.innerText = "Нэвтэрлээ! Шилжиж байна...";
-                    setTimeout(() => {
-                        window.location.href = '/settings.html';
-                    }, 1000);
-                }
+            if (error) {
+                status.innerText = "Алдаа: " + error.message;
             }
         }
     </script>
