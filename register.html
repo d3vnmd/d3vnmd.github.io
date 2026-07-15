@@ -3,64 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бүртгүүлэх | Biolink</title>
+    <title>Бүртгүүлэх | devnmd</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background-color: #0d0d0d;
+            background-color: #08080c;
             color: #ffffff;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px 0;
         }
         .form-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 15, 25, 0.6);
+            border: 1px solid rgba(138, 43, 226, 0.2);
             border-radius: 20px;
-            padding: 30px;
+            padding: 35px;
             width: 100%;
             max-width: 400px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.15);
+            box-sizing: border-box;
         }
-        h2 { text-align: center; margin-bottom: 20px; color: #ff416c; }
+        h2 { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            background: linear-gradient(45deg, #a12be2, #ff007f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         label {
             display: block;
-            font-size: 13px;
-            margin-bottom: 5px;
-            color: #888;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #8a8a9e;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         input, textarea {
             width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
             color: white;
             box-sizing: border-box;
+            transition: 0.2s;
         }
         input:focus, textarea:focus {
             outline: none;
-            border-color: #ff416c;
+            border-color: #a12be2;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(161, 43, 226, 0.2);
         }
         button {
             width: 100%;
-            padding: 12px;
-            background: #ff416c;
+            padding: 14px;
+            background: #a12be2;
             border: none;
             color: white;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: 0.2s;
             font-size: 16px;
+            box-shadow: 0 4px 15px rgba(161, 43, 226, 0.3);
         }
-        button:hover { background: #ff4b2b; }
-        .error-msg { color: #ff4d4d; font-size: 13px; margin-top: 5px; text-align: center; }
+        button:hover { 
+            background: #b33ff3; 
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #444;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .error-msg { 
+            color: #ff4d6a; 
+            font-size: 13px; 
+            margin-top: 10px; 
+            text-align: center; 
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -69,8 +100,8 @@
         <h2>Шинэ хаяг нээх</h2>
         <form id="registerForm">
             <div class="input-group">
-                <label>Username (Жишээ нь: d3vnmd)</label>
-                <input type="text" id="username" required placeholder="Зөвхөн англи үсэг, тоо">
+                <label>Username (Жишээ нь: devnmd)</label>
+                <input type="text" id="username" required placeholder="Зөвхөн жижиг англи үсэг, тоо">
             </div>
             <div class="input-group">
                 <label>Бүтэн нэр</label>
@@ -89,11 +120,11 @@
                 <input type="text" id="discord" placeholder="username#0000">
             </div>
             <div class="input-group">
-                <label>Instagram Username (Нэмэлт)</label>
+                <label>Instagram (Нэмэлт)</label>
                 <input type="text" id="instagram" placeholder="insta_handle">
             </div>
             <div class="input-group">
-                <label>GitHub Username (Нэмэлт)</label>
+                <label>GitHub (Нэмэлт)</label>
                 <input type="text" id="github" placeholder="github_handle">
             </div>
             <button type="submit" id="submitBtn">Хуудсаа үүсгэх</button>
@@ -102,12 +133,12 @@
     </div>
 
     <script>
-        // Өөрийн Supabase мэдээллийг энд оруулна
+        // Таны Supabase мэдээлэл
         const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M"
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
 
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Supabase холбох
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -126,17 +157,17 @@
             const instagram = document.getElementById('instagram').value.trim();
             const github = document.getElementById('github').value.trim();
 
-            // Англи үсэг, тоо болон доогуур зураас орсон эсэхийг шалгах
+            // Username-ийг зөвхөн англи үсэг, тоо, зураас байгаа эсэхийг шалгах дүрэм
             const usernameRegex = /^[a-zA-Z0-9_-]+$/;
             if (!usernameRegex.test(username)) {
-                errorDiv.innerText = "Username зөвхөн англи үсэг, тоо, зураас агуулсан байх ёстой.";
+                errorDiv.innerText = "Username зөвхөн англи үсэг, тоо, доогуур зураас агуулсан байх ёстой.";
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Хуудсаа үүсгэх";
                 return;
             }
 
             try {
-                // Өгөгдлийн сан руу хадгалах
+                // Supabase-ийн 'profiles' хүснэгт рүү мэдээллийг оруулах
                 const { error } = await supabaseClient
                     .from('profiles')
                     .insert([
@@ -144,17 +175,18 @@
                     ]);
 
                 if (error) {
-                    if (error.code === '23505') { // Postgres duplicate key error code
+                    // Хэрэв username давхардсан бол (PostgreSQL error code 23505)
+                    if (error.code === '23505') { 
                         errorDiv.innerText = "Уучлаарай, энэ username аль хэдийн бүртгэгдсэн байна!";
                     } else {
                         errorDiv.innerText = "Алдаа гарлаа: " + error.message;
                     }
                 } else {
-                    // Амжилттай болбол шууд өөрийнх нь үүссэн хуудас руу шилжүүлнэ
+                    // Амжилттай болвол шинээр үүссэн хаяг руу шууд үсрүүлнэ
                     window.location.href = `/${username}`;
                 }
             } catch (err) {
-                errorDiv.innerText = "Холболтын алдаа гарлаа.";
+                errorDiv.innerText = "Сүлжээний алдаа гарлаа.";
                 console.error(err);
             } finally {
                 submitBtn.disabled = false;

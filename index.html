@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biolink Platform</title>
+    <title>devnmd</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Харанхуй, чамин неон дизайн */
         body {
-            background-color: #0d0d0d;
+            background-color: #08080c;
             color: #ffffff;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            overflow-x: hidden;
         }
         .container {
             width: 100%;
@@ -22,38 +24,41 @@
             padding: 20px;
         }
         .profile-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 15, 25, 0.6);
+            border: 1px solid rgba(138, 43, 226, 0.2);
             border-radius: 24px;
-            padding: 35px 25px;
+            padding: 40px 25px;
             text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.15);
+            backdrop-filter: blur(12px);
         }
         .avatar {
-            width: 110px;
-            height: 110px;
+            width: 115px;
+            height: 115px;
             border-radius: 50%;
-            border: 2px solid #ff416c;
+            border: 2px solid #a12be2;
             object-fit: cover;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(161, 43, 226, 0.4);
         }
         .name {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 800;
             margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }
         .username {
             font-size: 14px;
-            color: #ff416c;
-            font-weight: 600;
-            margin-bottom: 15px;
+            color: #a12be2;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
         }
         .bio {
             font-size: 14px;
-            color: #b3b3b3;
-            margin-bottom: 25px;
-            line-height: 1.5;
+            color: #b0b0bc;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
         .links-container {
             display: flex;
@@ -61,29 +66,45 @@
             gap: 12px;
         }
         .link-btn {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: white;
-            padding: 14px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 14px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.2s ease-in-out;
+            font-size: 14px;
+            transition: all 0.25s ease-in-out;
         }
         .link-btn:hover {
-            background: #ff416c;
-            border-color: #ff416c;
-            transform: translateY(-2px);
+            background: #a12be2;
+            border-color: #a12be2;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(161, 43, 226, 0.3);
         }
         .register-btn {
             display: inline-block;
-            margin-top: 15px;
-            background: #ff416c;
+            margin-top: 20px;
+            background: #a12be2;
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: bold;
+            transition: 0.2s;
+        }
+        .register-btn:hover {
+            background: #b33ff3;
+            transform: translateY(-2px);
+        }
+        .brand-logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #a12be2, #ff007f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -94,12 +115,12 @@
     </div>
 
     <script>
-        // Өөрийн Supabase мэдээллийг энд оруулна
-        const SUPABASE_URL = "ЭНД_ӨӨРИЙН_SUPABASE_URL_ХУУЛНА";
-        const SUPABASE_ANON_KEY = "ЭНД_ӨӨРИЙН_SUPABASE_ANON_KEY_ХУУЛНА";
+        // Таны Supabase мэдээлэл
+        const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
 
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Supabase-ийг холбож ажиллуулах
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const urlParams = new URLSearchParams(window.location.search);
         let username = urlParams.get('u');
@@ -110,17 +131,17 @@
 
         const container = document.getElementById('main-container');
 
-        // Хэрэв шууд d3vnmd.github.io руу орвол (хэрэглэгчгүй)
+        // Хэрэв шууд devnmd.github.io руу орвол
         if (!username || username === "") {
             container.innerHTML = `
                 <div class="profile-card">
-                    <h2>Өөрийн хуудсыг үүсгээрэй</h2>
-                    <p style="color: #888;">Guns.lol шиг загварлаг өөрийн нэрийн хуудастай болоход ердөө 1 минут хангалттай.</p>
-                    <a href="/register.html" class="register-btn">Одоо бүртгүүлэх</a>
+                    <div class="brand-logo">devnmd</div>
+                    <p style="color: #888; font-size: 14px; margin-bottom: 20px;">Guns.lol шиг загварлаг өөрийн нэрийн хуудастай болоход ердөө 1 минут хангалттай.</p>
+                    <a href="/register.html" class="register-btn">Өөрийн хуудсыг үүсгэх</a>
                 </div>
             `;
         } else {
-            // Supabase-ээс тухайн username-ийг хайх
+            // Supabase-ээс хайх функц
             async function fetchUserProfile() {
                 try {
                     const { data: user, error } = await supabaseClient
@@ -132,8 +153,8 @@
                     if (error) throw error;
 
                     if (user) {
-                        // Хэрэглэгч олдвол харуулна
-                        document.title = `${user.name} (@${username})`;
+                        // Хэрэглэгч олдвол мэдээллийг харуулна
+                        document.title = `${user.name} (@${username}) | devnmd`;
                         
                         let linksHTML = '';
                         if (user.discord) linksHTML += `<a href="#" class="link-btn">Discord: ${user.discord}</a>`;
@@ -145,7 +166,7 @@
                                 <img src="${user.avatar}" class="avatar" alt="Avatar">
                                 <div class="name">${user.name}</div>
                                 <div class="username">@${username}</div>
-                                <div class="bio">${user.bio || 'Мэдээлэл оруулаагүй байна.'}</div>
+                                <div class="bio">${user.bio || 'Танилцуулга оруулаагүй байна.'}</div>
                                 <div class="links-container">
                                     ${linksHTML || '<p style="color: #555;">Холбоос нэмэгдээгүй байна.</p>'}
                                 </div>
@@ -155,8 +176,8 @@
                         // Хэрэглэгч олдохгүй бол
                         container.innerHTML = `
                             <div class="profile-card">
-                                <h2 style="color: #ff416c;">404 Олдоогүй</h2>
-                                <p>"${username}" нэртэй хэрэглэгч бүртгэгдээгүй байна.</p>
+                                <h2 style="color: #ff007f; margin-bottom: 10px;">404 Олдоогүй</h2>
+                                <p style="color: #888;">"${username}" нэртэй хэрэглэгч одоогоор бүртгэгдээгүй байна.</p>
                                 <a href="/register.html" class="register-btn">Энэ нэрийг авах</a>
                             </div>
                         `;
