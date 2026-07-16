@@ -10,13 +10,13 @@
             background-color: #030206; color: #fff;
             font-family: 'Segoe UI', sans-serif;
             margin: 0; display: flex; min-height: 100vh;
+            overflow-x: hidden;
         }
-        /* Зүүн талын Sidebar */
         .sidebar {
             width: 250px; background: #07070d;
             border-right: 1px solid rgba(138, 43, 226, 0.1);
             padding: 30px 20px; display: flex; flex-direction: column; gap: 10px;
-            box-sizing: border-box;
+            box-sizing: border-box; shrink: 0;
         }
         .brand {
             font-size: 24px; font-weight: 900; color: #bd00ff;
@@ -32,16 +32,34 @@
         .menu-btn:hover, .menu-btn.active {
             background: rgba(189, 0, 255, 0.05); color: #bd00ff;
         }
-        /* Баруун талын Үндсэн хэсэг */
+        
+        .main-container-wrapper {
+            display: flex; flex: 1; width: calc(100% - 250px);
+        }
         .main-content { 
             flex: 1; padding: 40px; overflow-y: auto; 
-            box-sizing: border-box; width: 100%; max-width: 100vw;
-            overflow-x: hidden;
+            box-sizing: border-box;
         }
+        
+        /* 📱 Баруун талын LIVE PREVIEW */
+        .preview-pane {
+            width: 380px; background: #090912;
+            border-left: 1px solid rgba(138, 43, 226, 0.1);
+            padding: 30px 20px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            box-sizing: border-box; position: sticky; top: 0; height: 100vh;
+        }
+        .preview-phone {
+            width: 100%; height: 600px; border: 4px solid #1c1a27;
+            border-radius: 36px; background: #020205; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box; position: relative;
+        }
+
         .tab-section { display: none; }
         .tab-section.active { display: block; }
         
-        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card {
             background: #090911; border: 1px solid rgba(255,255,255,0.05);
@@ -49,9 +67,7 @@
         }
         .stat-card h4 { margin: 0 0 5px 0; color: #8a8a9e; font-size: 11px; text-transform: uppercase; }
         .stat-card p { margin: 0; font-size: 24px; font-weight: 800; color: #fff; }
-        .stat-card span { font-size: 11px; color: #00f0ff; }
 
-        /* Картууд */
         .card {
             background: #090911; border: 1px solid rgba(138, 43, 226, 0.05);
             border-radius: 16px; padding: 25px; margin-bottom: 20px;
@@ -76,23 +92,28 @@
         .custom-link-item {
             background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
             padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 10px;
         }
 
-        /* 📱 ГАР УТАСНЫ ЭРТНИЙ ТӨГС ШИЙДЭЛ (Mobile Responsive) */
-        @media (max-width: 768px) {
+        /* 👤 Админ хүснэгт */
+        .admin-table {
+            width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px;
+        }
+        .admin-table th, .admin-table td {
+            border: 1px solid rgba(255,255,255,0.05); padding: 12px; text-align: left;
+        }
+        .admin-table th { background: rgba(138, 43, 226, 0.1); color: #00f0ff; }
+        .admin-input-small { width: 70px; padding: 5px; font-size: 12px; text-align: center; }
+
+        /* 📱 Гар утасны тохируулга */
+        @media (max-width: 992px) {
             body { flex-direction: column; }
             .sidebar {
                 width: 100%; border-right: none; border-bottom: 1px solid rgba(138, 43, 226, 0.1);
-                padding: 15px; box-sizing: border-box; flex-direction: row; overflow-x: auto;
-                white-space: nowrap; gap: 8px; justify-content: flex-start;
+                padding: 15px; flex-direction: row; overflow-x: auto; white-space: nowrap; gap: 8px;
             }
-            .brand { display: none; }
-            .menu-btn { padding: 10px 14px; font-size: 12px; flex: 0 0 auto; }
-            .main-content { padding: 20px 15px; width: 100%; }
-            .stats-grid { gap: 15px; grid-template-columns: 1fr; }
-            .stat-card { padding: 15px; }
-            .stat-card p { font-size: 20px; }
+            .main-container-wrapper { width: 100%; flex-direction: column-reverse; }
+            .preview-pane { width: 100%; height: auto; position: static; padding: 20px; border-left: none; border-bottom: 1px solid rgba(138,43,226,0.1); }
+            .main-content { padding: 20px; }
         }
     </style>
 </head>
@@ -104,151 +125,166 @@
         <button class="menu-btn" onclick="showTab('customize')">🎨 Загварчилгаа</button>
         <button class="menu-btn" onclick="showTab('links')">🔗 Холбоосууд</button>
         <button class="menu-btn" onclick="showTab('templates')">💎 Загварууд</button>
+        <button id="admin-menu-btn" class="menu-btn" style="display:none; color:#00f0ff;" onclick="showTab('admin')">👑 Админ Панель</button>
         <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#bd00ff; text-decoration:none;">👁️ Миний хуудас</a>
         <button class="menu-btn" style="color: #ff0055;" onclick="logout()">❌ Гарах</button>
     </div>
 
-    <div class="main-content">
-        <!-- 1. ACCOUNT TAB -->
-        <div id="tab-account" class="tab-section active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h4>Хэрэглэгч</h4>
-                    <p id="stat-username">@username</p>
-                    <span id="cooldown-status">Солих боломжтой</span>
+    <div class="main-container-wrapper">
+        <div class="main-content">
+            <!-- 1. ACCOUNT TAB -->
+            <div id="tab-account" class="tab-section active">
+                <div class="stats-grid">
+                    <div class="stat-card"><h4>Хэрэглэгч</h4><p id="stat-username">@username</p><span id="cooldown-status">Солих боломжтой</span></div>
+                    <div class="stat-card"><h4>UID</h4><p id="stat-uid">#0</p><span>Бүртгэлийн дугаар</span></div>
+                    <div class="stat-card"><h4>Нийт Лайк</h4><p id="stat-likes">0</p><span>Хуудаснаас авсан</span></div>
                 </div>
-                <div class="stat-card">
-                    <h4>UID</h4>
-                    <p id="stat-uid">#0</p>
-                    <span>Бүртгэлийн дугаар</span>
-                </div>
-                <div class="stat-card">
-                    <h4>Нийт Лайк</h4>
-                    <p id="stat-likes">0</p>
-                    <span>Хуудаснаас авсан</span>
+
+                <div class="card">
+                    <h3>Профайл Төлөв</h3>
+                    <div class="group">
+                        <label>Нэр солих (7 хоногт нэг удаа)</label>
+                        <input type="text" id="new-username" placeholder="Шинэ нэр">
+                        <span id="username-cooldown-timer" class="cooldown-text"></span>
+                        <button style="margin-top:10px;" onclick="changeUsername()">Шинэчлэх</button>
+                    </div>
+                    <div class="group">
+                        <label>Дэлгэцийн нэр</label>
+                        <input type="text" id="profile-name" oninput="updateLivePreview()">
+                    </div>
+                    <div class="group">
+                        <label>Танилцуулга (Bio)</label>
+                        <textarea id="profile-bio" rows="3" oninput="updateLivePreview()"></textarea>
+                    </div>
+                    <div class="group">
+                        <label>Профайл зураг (Аватар сонгох)</label>
+                        <input type="file" id="avatar-file" accept="image/*" onchange="previewSelectedAvatar(this)">
+                        <div style="margin-top:10px;"><img id="avatar-saved-preview" src="" style="width:50px; height:50px; border-radius:50%; display:none; border:1px solid #bd00ff;"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card">
-                <h3>Хаяг Төлөв</h3>
-                <div class="group">
-                    <label>Нэр солих (7 хоногийн хязгаартай)</label>
-                    <input type="text" id="new-username" placeholder="Шинэ нэр">
-                    <span id="username-cooldown-timer" class="cooldown-text"></span>
-                    <button style="margin-top:10px;" onclick="changeUsername()">Шинэчлэх</button>
+            <!-- 2. CUSTOMIZE TAB -->
+            <div id="tab-customize" class="tab-section">
+                <div class="card">
+                    <h3>Арын Фон Засах</h3>
+                    <div class="group">
+                        <label>Фон Төрөл</label>
+                        <select id="bg-type" onchange="toggleBgInputs(); updateLivePreview();">
+                            <option value="color">Дан өнгө</option>
+                            <option value="image">Зураг / GIF (Хуулах)</option>
+                            <option value="video">Бичлэг (Хуулах)</option>
+                        </select>
+                    </div>
+                    <div class="group" id="file-upload-group" style="display:none;">
+                        <label>Файл Сонгох (GIF, Зураг, Видео)</label>
+                        <input type="file" id="bg-file" accept="image/*,video/*">
+                    </div>
+                    <div class="group">
+                        <label>Фоны бүрсийлт (Blur: 0px - 30px)</label>
+                        <input type="range" id="bg-blur" min="0" max="30" value="10" oninput="updateLivePreview()">
+                    </div>
+                    <div class="group">
+                        <label>Картын тунгалаг байдал (Opacity: 10% - 100%)</label>
+                        <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="0.6" oninput="updateLivePreview()">
+                    </div>
                 </div>
-                <div class="group">
-                    <label>Дэлгэцийн нэр</label>
-                    <input type="text" id="profile-name">
-                </div>
-                <div class="group">
-                    <label>Танилцуулга (Bio)</label>
-                    <textarea id="profile-bio" rows="3"></textarea>
-                </div>
-                <div class="group">
-                    <label>Профайл зураг (Avatar оруулах)</label>
-                    <input type="file" id="avatar-file" accept="image/*">
+
+                <div class="card">
+                    <h3>Үсэг ба Хяналт</h3>
+                    <div class="group">
+                        <label>Үсгийн Загвар (Font)</label>
+                        <select id="font-family" onchange="updateLivePreview()">
+                            <option value="Segoe UI">Segoe UI</option>
+                            <option value="Courier New">Courier New (Hacker)</option>
+                            <option value="Georgia">Georgia (Classic)</option>
+                            <option value="cursive">Cursive (Sakura)</option>
+                        </select>
+                    </div>
+                    <div class="group">
+                        <label>Хулганы заагч (Custom Cursor Линк)</label>
+                        <input type="text" id="custom-cursor" placeholder="https://example.com/cursor.png">
+                    </div>
+                    <div class="group">
+                        <label>Арын Хөгжим оруулах (MP3 файл)</label>
+                        <input type="file" id="music-file" accept="audio/*">
+                    </div>
                 </div>
             </div>
+
+            <!-- 3. LINKS TAB -->
+            <div id="tab-links" class="tab-section">
+                <div class="card">
+                    <h3>Сошиал Холбоос (Зөвхөн нэрээ бичнэ)</h3>
+                    <div class="group"><label>TikTok</label><input type="text" id="link-tiktok" placeholder="хэрэглэгчийн нэр" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>Instagram</label><input type="text" id="link-instagram" placeholder="хэрэглэгчийн нэр" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>GitHub</label><input type="text" id="link-github" placeholder="хэрэглэгчийн нэр" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>YouTube</label><input type="text" id="link-youtube" placeholder="@-тэй нэр" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>Steam</label><input type="text" id="link-steam" placeholder="профайл ID" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>Discord ID</label><input type="text" id="link-discord" placeholder="ID эсвэл нэр" oninput="updateLivePreview()"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Дурын холбоос нэмэх (Custom Links)</h3>
+                    <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                        <input type="text" id="custom-title" placeholder="Товчны нэр" style="flex:1;">
+                        <input type="text" id="custom-url" placeholder="Линк (https://...)" style="flex:2;">
+                        <button onclick="addCustomLink()">Нэмэх</button>
+                    </div>
+                    <div id="custom-links-list"></div>
+                </div>
+            </div>
+
+            <!-- 4. TEMPLATES TAB -->
+            <div id="tab-templates" class="tab-section">
+                <div class="card">
+                    <h3>Системийн бэлэн загварууд</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button onclick="applyTemplate('cyberpunk')" style="background:#00f0ff; color:#000;">Cyberpunk</button>
+                        <button onclick="applyTemplate('obsidian')" style="background:#111; color:#fff;">Obsidian</button>
+                        <button onclick="applyTemplate('sakura')" style="background:#ffb3d9; color:#000;">Sakura</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 👑 ADMIN DASHBOARD TAB -->
+            <div id="tab-admin" class="tab-section">
+                <div class="card">
+                    <h3>👑 Админ Удирдлагын хэсэг</h3>
+                    <p style="color:#8a8a9e; font-size:13px;">Та систем дэх нийт хэрэглэгчдийг устгахгүйгээр удирдах боломжтой.</p>
+                    <div class="table-container" style="overflow-x:auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Хэрэглэгч</th>
+                                    <th>Нэр</th>
+                                    <th>Лайк</th>
+                                    <th>Тэмдэг</th>
+                                    <th>Бан</th>
+                                    <th>Үйлдэл</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-user-rows"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <button class="save-btn" onclick="saveAllSettings()">💾 Бүх өөрчлөлтийг хадгалах</button>
+            <div class="status" id="save-status"></div>
         </div>
 
-        <!-- 2. CUSTOMIZE TAB -->
-        <div id="tab-customize" class="tab-section">
-            <div class="card">
-                <h3>Арын Фон Засах</h3>
-                <div class="group">
-                    <label>Фон Төрөл</label>
-                    <select id="bg-type" onchange="toggleBgInputs()">
-                        <option value="color">Дан өнгө</option>
-                        <option value="image">Зураг / GIF (Хуулах)</option>
-                        <option value="video">Бичлэг (Хуулах)</option>
-                    </select>
-                </div>
-                <div class="group" id="file-upload-group" style="display:none;">
-                    <label>Файл Сонгох (GIF, Зураг, Видео)</label>
-                    <input type="file" id="bg-file" accept="image/*,video/*">
-                </div>
-                <div class="group">
-                    <label>Фоны бүрсийлт (Blur: 0px - 30px)</label>
-                    <input type="range" id="bg-blur" min="0" max="30" value="10">
-                </div>
-                <div class="group">
-                    <label>Картын тунгалаг байдал (Opacity: 10% - 100%)</label>
-                    <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="0.6">
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Бичиг ба Үйлдэл</h3>
-                <div class="group">
-                    <label>Үсгийн Загвар (Font)</label>
-                    <select id="font-family">
-                        <option value="Segoe UI">Segoe UI</option>
-                        <option value="Courier New">Courier New (Hacker)</option>
-                        <option value="Georgia">Georgia (Classic)</option>
-                        <option value="cursive">Cursive (Sakura)</option>
-                    </select>
-                </div>
-                <div class="group">
-                    <label>Хулганы заагч (Custom Cursor Линк)</label>
-                    <input type="text" id="custom-cursor" placeholder="https://example.com/cursor.png">
-                </div>
-                <div class="group">
-                    <label>Арын Хөгжим оруулах (MP3 файл)</label>
-                    <input type="file" id="music-file" accept="audio/*">
-                </div>
+        <!-- 📱 Баруун талын LIVE PREVIEW CONTAINER -->
+        <div class="preview-pane">
+            <h3 style="color:#00f0ff; font-size:14px; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Live Preview (Шууд Харах)</h3>
+            <div class="preview-phone">
+                <div id="preview-avatar-box" style="width:70px; height:70px; border-radius:50%; background:#1c1a27; overflow:hidden; margin-bottom:15px;"><img id="preview-avatar" src="" style="width:100%; height:100%; object-fit:cover; display:none;"></div>
+                <div id="preview-name" style="font-weight:900; font-size:18px; margin-bottom:5px;">Нэр</div>
+                <div id="preview-username-text" style="font-size:11px; color:#bd00ff; margin-bottom:15px;">@username</div>
+                <div id="preview-bio" style="font-size:12px; color:#8a8a9e; text-align:center; max-width:80%; line-height:1.4; margin-bottom:20px;">Танилцуулга...</div>
+                <div id="preview-links" style="display:flex; flex-direction:column; gap:8px; width:90%;"></div>
             </div>
         </div>
-
-        <!-- 3. LINKS TAB -->
-        <div id="tab-links" class="tab-section">
-            <div class="card">
-                <h3>Ухаалаг Сошиал Холбоос (Зөвхөн нэрээ бичнэ)</h3>
-                <div class="group"><label>TikTok</label><input type="text" id="link-tiktok" placeholder="хэрэглэгчийн нэр"></div>
-                <div class="group"><label>Instagram</label><input type="text" id="link-instagram" placeholder="хэрэглэгчийн нэр"></div>
-                <div class="group"><label>GitHub</label><input type="text" id="link-github" placeholder="хэрэглэгчийн нэр"></div>
-                <div class="group"><label>YouTube</label><input type="text" id="link-youtube" placeholder="@-тэй нэр"></div>
-                <div class="group"><label>Steam</label><input type="text" id="link-steam" placeholder="профайл ID"></div>
-                <div class="group"><label>Discord ID</label><input type="text" id="link-discord" placeholder="ID эсвэл нэр"></div>
-            </div>
-
-            <div class="card">
-                <h3>Дурын холбоос нэмэх (Custom Links)</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-                    <input type="text" id="custom-title" placeholder="Товчны нэр" style="flex:1;">
-                    <input type="text" id="custom-url" placeholder="Линк (https://...)" style="flex:2;">
-                    <button onclick="addCustomLink()">Нэмэх</button>
-                </div>
-                <div id="custom-links-list"></div>
-            </div>
-        </div>
-
-        <!-- 4. TEMPLATES TAB -->
-        <div id="tab-templates" class="tab-section">
-            <div class="card">
-                <h3>Системийн бэлэн загварууд</h3>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button onclick="applyTemplate('cyberpunk')" style="background:#00f0ff; color:#000;">Cyberpunk</button>
-                    <button onclick="applyTemplate('obsidian')" style="background:#111; color:#fff;">Obsidian</button>
-                    <button onclick="applyTemplate('sakura')" style="background:#ffb3d9; color:#000;">Sakura</button>
-                </div>
-            </div>
-
-            <!-- Нийтийн Загвар систем -->
-            <div class="card">
-                <h3>Нийтийн загвар хуваалцах (Community Shared)</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-                    <input type="text" id="template-name" placeholder="Загварын нэр" style="flex:1;">
-                    <button onclick="shareWithCommunity()">Нийтэд хуваалцах</button>
-                </div>
-                <div id="community-templates-list">
-                    <!-- Бусад хүмүүсийн хуваалцсан загвар харагдана -->
-                </div>
-            </div>
-        </div>
-
-        <button class="save-btn" onclick="saveAllSettings()">💾 Бүх өөрчлөлтийг хадгалах</button>
-        <div class="status" id="save-status"></div>
     </div>
 
     <script>
@@ -291,6 +327,7 @@
 
             checkCooldown();
 
+            // Хадгалагдсан утгуудыг нөхөх (Refresh хийсэн ч устдаг байсныг засав 🛠️)
             document.getElementById('profile-name').value = userProfile.name || '';
             document.getElementById('profile-bio').value = userProfile.bio || '';
             document.getElementById('bg-type').value = userProfile.bg_type || 'color';
@@ -298,6 +335,12 @@
             document.getElementById('bg-opacity').value = userProfile.bg_opacity || 0.6;
             document.getElementById('font-family').value = userProfile.font_family || 'Segoe UI';
             document.getElementById('custom-cursor').value = userProfile.custom_cursor || '';
+
+            if (userProfile.avatar) {
+                const img = document.getElementById('avatar-saved-preview');
+                img.src = userProfile.avatar;
+                img.style.display = 'block';
+            }
 
             const socials = userProfile.socials || {};
             document.getElementById('link-tiktok').value = socials.tiktok || '';
@@ -310,8 +353,71 @@
             myCustomLinks = userProfile.custom_links || [];
             
             renderCustomLinks();
-            fetchCommunityTemplates();
             toggleBgInputs();
+
+            // Админ шалгах (devnmd хэрэглэгч)
+            if (userProfile.is_admin === true || userProfile.username === 'devnmd') {
+                document.getElementById('admin-menu-btn').style.display = 'flex';
+                loadAdminPanel();
+            }
+
+            updateLivePreview();
+        }
+
+        // Live Preview шууд нөхөх функц
+        function updateLivePreview() {
+            const name = document.getElementById('profile-name').value || 'Таны нэр';
+            const bio = document.getElementById('profile-bio').value || 'Танилцуулга оруулна уу...';
+            const username = userProfile ? userProfile.username : 'username';
+
+            document.getElementById('preview-name').innerText = name;
+            document.getElementById('preview-username-text').innerText = `@${username}`;
+            document.getElementById('preview-bio').innerText = bio;
+
+            const avatarPreview = document.getElementById('preview-avatar');
+            if (userProfile && userProfile.avatar) {
+                avatarPreview.src = userProfile.avatar;
+                avatarPreview.style.display = 'block';
+            }
+
+            // Preview links
+            const previewLinksContainer = document.getElementById('preview-links');
+            previewLinksContainer.innerHTML = '';
+
+            const socials = ['tiktok', 'instagram', 'github', 'youtube', 'steam', 'discord'];
+            socials.forEach(plat => {
+                const val = document.getElementById(`link-${plat}`).value.trim();
+                if (val) {
+                    const div = document.createElement('div');
+                    div.style.cssText = "background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; font-size:11px; text-align:center; color:#fff; border:1px solid rgba(138,43,226,0.2);";
+                    div.innerText = plat.toUpperCase();
+                    previewLinksContainer.appendChild(div);
+                }
+            });
+
+            myCustomLinks.forEach(link => {
+                if (link.title) {
+                    const div = document.createElement('div');
+                    div.style.cssText = "background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; font-size:11px; text-align:center; color:#fff; border:1px solid rgba(138,43,226,0.2);";
+                    div.innerText = link.title.toUpperCase();
+                    previewLinksContainer.appendChild(div);
+                }
+            });
+        }
+
+        function previewSelectedAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const savedPreview = document.getElementById('avatar-saved-preview');
+                    const livePreview = document.getElementById('preview-avatar');
+                    savedPreview.src = e.target.result;
+                    savedPreview.style.display = 'block';
+                    livePreview.src = e.target.result;
+                    livePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
         function showTab(tabId) {
@@ -361,14 +467,13 @@
                 .eq('id', sessionUser.id);
 
             if (error) {
-                alert("Алдаа: Сонгосон нэр бүртгэлтэй эсвэл хязгаар дуусаагүй байна!");
+                alert("Алдаа: Сонгосон нэр бүртгэлтэй байна!");
             } else {
-                alert("Username амжилттай солигдлоо!");
+                alert("Нэр солигдлоо!");
                 window.location.reload();
             }
         }
 
-        // Custom Links
         function renderCustomLinks() {
             const list = document.getElementById('custom-links-list');
             list.innerHTML = '';
@@ -392,89 +497,13 @@
             document.getElementById('custom-title').value = '';
             document.getElementById('custom-url').value = '';
             renderCustomLinks();
+            updateLivePreview();
         }
 
         function removeCustomLink(idx) {
             myCustomLinks.splice(idx, 1);
             renderCustomLinks();
-        }
-
-        // 💎 Нийтийн загварын систем
-        async function fetchCommunityTemplates() {
-            const list = document.getElementById('community-templates-list');
-            list.innerHTML = 'Загварыг уншиж байна...';
-
-            const { data, error } = await supabaseClient
-                .from('community_templates')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (!error && data) {
-                list.innerHTML = '';
-                data.forEach(tpl => {
-                    const div = document.createElement('div');
-                    div.className = 'custom-link-item';
-                    div.innerHTML = `
-                        <div><strong>${tpl.template_name}</strong> <span style="color:#8a8a9e; font-size:11px;">(Бүтээгч: @${tpl.creator_username})</span></div>
-                        <button onclick='applyCommunityConfig(${JSON.stringify(tpl.config)})' style="background:#00f0ff; color:#000; padding:5px 10px; font-size:12px;">Ашиглах</button>
-                    `;
-                    list.appendChild(div);
-                });
-            } else {
-                list.innerHTML = 'Хуваалцсан загвар одоогоор байхгүй байна.';
-            }
-        }
-
-        async function shareWithCommunity() {
-            const name = document.getElementById('template-name').value.trim();
-            if (!name) return;
-
-            const currentConfig = {
-                bg_type: document.getElementById('bg-type').value,
-                bg_blur: document.getElementById('bg-blur').value,
-                bg_opacity: document.getElementById('bg-opacity').value,
-                font_family: document.getElementById('font-family').value,
-                custom_cursor: document.getElementById('custom-cursor').value,
-                background_url: userProfile.background_url,
-                music_url: userProfile.music_url
-            };
-
-            const { error } = await supabaseClient
-                .from('community_templates')
-                .insert([{
-                    creator_id: sessionUser.id,
-                    creator_username: userProfile.username,
-                    template_name: name,
-                    config: currentConfig
-                }]);
-
-            if (error) {
-                alert("Алдаа: Загварыг хуваалцаж чадсангүй.");
-            } else {
-                alert(`"${name}" загварыг амжилттай хуваалцлаа!`);
-                document.getElementById('template-name').value = '';
-                fetchCommunityTemplates();
-            }
-        }
-
-        async function applyCommunityConfig(config) {
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({
-                    bg_type: config.bg_type,
-                    bg_blur: config.bg_blur,
-                    bg_opacity: config.bg_opacity,
-                    font_family: config.font_family,
-                    custom_cursor: config.custom_cursor,
-                    background_url: config.background_url,
-                    music_url: config.music_url
-                })
-                .eq('id', sessionUser.id);
-
-            if (!error) {
-                alert("Сонгосон загварыг амжилттай ашиглалаа!");
-                window.location.reload();
-            }
+            updateLivePreview();
         }
 
         async function applyTemplate(theme) {
@@ -489,8 +518,80 @@
 
             const { error } = await supabaseClient.from('profiles').update(config).eq('id', sessionUser.id);
             if (!error) {
-                alert("Загвар солигдлоо!");
+                alert("Загвар амжилттай солигдлоо!");
                 window.location.reload();
+            }
+        }
+
+        // 👑 АДМИН УДИРДЛАГЫН СИСТЕМ (Зөвхөн devnmd)
+        async function loadAdminPanel() {
+            const tbody = document.getElementById('admin-user-rows');
+            tbody.innerHTML = 'Ачаалж байна...';
+
+            const { data: users, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (!error && users) {
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    // Хэрэглэгчдийг устгахгүйгээр (одооноос устгахаа болъё) зөвхөн хөгжим арилгах, бан, лайк, нэр засах
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:bold; color:#00f0ff;">@${user.username}</td>
+                        <td><input type="text" id="admin-name-${user.id}" class="admin-input-small" value="${user.name}" style="width:100px;"></td>
+                        <td><input type="number" id="admin-likes-${user.id}" class="admin-input-small" value="${user.likes_count || 0}"></td>
+                        <td>
+                            <select id="admin-badge-${user.id}" style="width:100px; padding:3px;">
+                                <option value="" ${user.badge === null ? 'selected' : ''}>Байхгүй</option>
+                                <option value="Verified" ${user.badge === 'Verified' ? 'selected' : ''}>Verified</option>
+                                <option value="Admin" ${user.badge === 'Admin' ? 'selected' : ''}>Admin</option>
+                                <option value="Premium" ${user.badge === 'Premium' ? 'selected' : ''}>Premium</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="admin-ban-${user.id}" ${user.is_banned ? 'checked' : ''}>
+                        </td>
+                        <td>
+                            <button onclick="saveUserAdmin('${user.id}')" style="padding:5px 10px; font-size:12px; background:#00ff66; color:#000;">Засах</button>
+                            ${user.music_url ? `<button onclick="resetUserMusic('${user.id}')" style="padding:5px 10px; font-size:12px; background:#ffaa00; color:#000; margin-left:5px;">Хөгжим устгах</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        async function saveUserAdmin(userId) {
+            const name = document.getElementById(`admin-name-${userId}`).value.trim();
+            const likes = parseInt(document.getElementById(`admin-likes-${userId}`).value);
+            const badge = document.getElementById(`admin-badge-${userId}`).value || null;
+            const ban = document.getElementById(`admin-ban-${userId}`).checked;
+
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ name, likes_count: likes, badge, is_banned: ban })
+                .eq('id', userId);
+
+            if (!error) {
+                alert("Хэрэглэгчийн мэдээлэл засагдлаа!");
+                loadAdminPanel();
+            } else {
+                alert("Засахад алдаа гарлаа: " + error.message);
+            }
+        }
+
+        async function resetUserMusic(userId) {
+            if (!confirm("Хэрэглэгчийн хөгжмийг устгах уу?")) return;
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ music_url: null })
+                .eq('id', userId);
+
+            if (!error) {
+                alert("Хэрэглэгчийн хөгжим устгагдлаа!");
+                loadAdminPanel();
             }
         }
 
