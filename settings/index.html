@@ -16,13 +16,12 @@
         <button class="menu-btn" onclick="showTab('links')">🔗 Холбоосууд</button>
         <button class="menu-btn" onclick="showTab('verification')">🏅 Баталгаажуулалт</button>
         <button id="admin-menu-btn" class="menu-btn" style="display:none; color:#00f0ff;" onclick="showTab('admin')">👑 Админ Панель</button>
-        <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#bd00ff; text-decoration:none;">👁️ Миний хуудас</a>
+        <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#00f2fe; text-decoration:none;">👁️ Миний хуудас</a>
         <button class="menu-btn" style="color: #ff0055;" onclick="logout()">❌ Гарах</button>
     </div>
 
     <div class="main-container-wrapper">
         <div class="main-content">
-            <!-- 1. ACCOUNT TAB -->
             <div id="tab-account" class="tab-section active">
                 <div class="stats-grid">
                     <div class="stat-card"><h4>Хэрэглэгч</h4><p id="stat-username">@username</p><span id="cooldown-status">Солих боломжтой</span></div>
@@ -53,19 +52,18 @@
                 </div>
             </div>
 
-            <!-- 2. CUSTOMIZE TAB -->
             <div id="tab-customize" class="tab-section">
                 <div class="card">
                     <h3>Арын Фон Засах</h3>
                     <div class="group">
                         <label>Фон Төрөл</label>
-                        <select id="bg-type" onchange="toggleBgInputs(); updateLivePreview();">
+                        <select id="bg-type" onchange="updateLivePreview();">
                             <option value="color">Дан өнгө</option>
                             <option value="image">Зураг / GIF</option>
                             <option value="video">Бичлэг / Видео</option>
                         </select>
                     </div>
-                    <div class="group" id="bg-url-group">
+                    <div class="group">
                         <label>Арын фон линк (Direct Link)</label>
                         <input type="text" id="bg-url-input" placeholder="https://example.com/background.gif" oninput="updateLivePreview()">
                     </div>
@@ -87,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- 3. LINKS TAB -->
             <div id="tab-links" class="tab-section">
                 <div class="card">
                     <h3>Сошиал Холбоос</h3>
@@ -98,20 +95,18 @@
                 </div>
             </div>
 
-            <!-- 4. VERIFICATION REQUEST TAB -->
             <div id="tab-verification" class="tab-section">
                 <div class="card">
                     <h3>🎖️ Баталгаажуулах тэмдэг хүсэх</h3>
-                    <p style="color:#8a8a9e; font-size:13px; line-height:1.6;">Манай системээс баталгаажуулсан цэнхэр тэмдэг авахын тулд доор өөрийн тайлбарыг үнэн зөв бичнэ үү. Тайлбар нь <strong>дор хаяж 20 үг, дээд тал нь 200 үгтэй</strong> байх ёстой.</p>
+                    <p style="color:#8a8a9e; font-size:13px; line-height:1.6;">Баталгаажуулсан тэмдэг авахын тулд доор өөрийн тайлбарыг үнэн зөв бичнэ үү. Тайлбар нь <strong>дор хаяж 20 үг, дээд тал нь 200 үгтэй</strong> байх ёстой.</p>
                     <div class="group">
                         <label>Хүсэлт гаргах шалтгаан (Үгийн тоо: <span id="reason-word-count" style="color:var(--accent-teal);">0</span>)</label>
-                        <textarea id="verification-reason" rows="6" placeholder="Жишээ: Би өөрийн YouTube суваг дээрээ 10,000 дагагчтай бөгөөд..." oninput="countWords(this.value)"></textarea>
+                        <textarea id="verification-reason" rows="6" placeholder="YouTube суваг дээрээ би 10,000 дагагчтай бөгөөд..." oninput="countWords(this.value)"></textarea>
                         <button style="margin-top:15px; width:100%;" onclick="submitVerificationRequest()">Хүсэлт илгээх</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. 👑 ADMIN DASHBOARD -->
             <div id="tab-admin" class="tab-section">
                 <div class="card">
                     <h3>👑 Админ Удирдлагын хэсэг</h3>
@@ -135,7 +130,6 @@
 
                 <div class="card" style="border-color: #00f2fe; margin-top:30px;">
                     <h3>🎖️ Баталгаажуулах Хүсэлтүүд (Verified Requests)</h3>
-                    <p style="color:#8a8a9e; font-size:13px;">Хэрэглэгчдээс ирсэн шаардлага хангасан хүсэлтүүдийг хянах.</p>
                     <div style="overflow-x:auto;">
                         <table class="admin-table">
                             <thead>
@@ -155,7 +149,6 @@
             <div class="status" id="save-status"></div>
         </div>
 
-        <!-- 📱 LIVE PREVIEW PANE -->
         <div class="preview-pane">
             <h3 style="color:#00f2fe; font-size:14px; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Live Preview</h3>
             <div class="preview-phone">
@@ -284,10 +277,6 @@
             event.target.classList.add('active');
         }
 
-        function toggleBgInputs() {
-            const type = document.getElementById('bg-type').value;
-        }
-
         function checkCooldown() {
             if (userProfile.username_last_changed) {
                 const lastChanged = new Date(userProfile.username_last_changed);
@@ -373,8 +362,6 @@
         }
 
         async function resolveRequest(reqId, userId, action) {
-            let badgeValue = action === 'Verified' ? 'Verified' : null;
-            
             if (action === 'Verified') {
                 await supabaseClient.from('profiles').update({ badge: 'Verified' }).eq('id', userId);
             }

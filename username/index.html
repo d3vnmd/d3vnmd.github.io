@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background-color: #020205; color: #fff;
+            background-color: #030206; color: #fff;
             font-family: 'Segoe UI', sans-serif;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; margin: 0;
@@ -15,15 +15,15 @@
         }
         body::before {
             content: ''; position: absolute; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(189,0,255,0.12) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.12) 0%, rgba(0,0,0,0) 70%);
             top: -100px; left: -100px; z-index: -1;
         }
         .card {
-            background: rgba(10, 10, 18, 0.75);
-            border: 1px solid rgba(189, 0, 255, 0.25);
+            background: rgba(8, 7, 13, 0.75);
+            border: 1px solid rgba(0, 242, 254, 0.2);
             border-radius: 24px; padding: 40px;
             width: 100%; max-width: 400px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 30px rgba(189, 0, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 30px rgba(0, 242, 254, 0.1);
             box-sizing: border-box; text-align: center;
             backdrop-filter: blur(15px);
             animation: cardSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -32,27 +32,26 @@
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        h2 { color: #bd00ff; margin-bottom: 12px; font-weight: 800; font-size: 26px; }
+        h2 { color: #00f2fe; margin-bottom: 12px; font-weight: 800; font-size: 26px; }
         p { color: #8a8a9e; font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
         .group { margin-bottom: 22px; text-align: left; }
-        label { display: block; font-size: 11px; color: #8a8a9e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        label { display: block; font-size: 11px; color: #8a8a9e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
         input {
             width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;
             color: white; box-sizing: border-box; font-size: 14px;
             transition: all 0.3s;
         }
-        input:focus { outline: none; border-color: #bd00ff; background: rgba(189,0,255,0.02); }
+        input:focus { outline: none; border-color: #00f2fe; background: rgba(0,242,254,0.02); }
         button {
-            width: 100%; padding: 16px; background: #bd00ff; border: none;
-            color: #fff; font-weight: bold; border-radius: 12px;
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #00f2fe, #9b51e0); border: none;
+            color: #000; font-weight: bold; border-radius: 12px;
             cursor: pointer; font-size: 16px; transition: all 0.25s;
-            box-shadow: 0 4px 15px rgba(189, 0, 255, 0.35);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);
         }
         button:hover { 
-            background: #d033ff; 
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(189, 0, 255, 0.5);
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
         }
         .status { color: #ff0055; font-size: 13px; margin-top: 18px; font-weight: bold; }
     </style>
@@ -83,17 +82,10 @@
 
         async function init() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                window.location.href = '/register';
-                return;
-            }
+            if (!user) { window.location.href = '/register'; return; }
             sessionUser = user;
 
-            const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('username')
-                .eq('id', user.id)
-                .maybeSingle();
+            const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', user.id).maybeSingle();
 
             if (profile) {
                 window.location.href = '/settings';
@@ -120,8 +112,8 @@
             }
 
             const regex = /^[a-zA-Z0-9_-]+$/;
-            if (!regex.test(username)) {
-                status.innerText = "Зөвхөн англи үсэг, тоо болон зураас зөвшөөрөгдөнө.";
+            if (!regex.test(username) || username.length < 3 || username.length > 15) {
+                status.innerText = "Хэрэглэгчийн нэр 3-15 урттай, англи үсэг, тоо байх ёстой.";
                 return;
             }
 
@@ -142,14 +134,11 @@
             }]);
 
             if (error) {
-                status.innerText = "Энэ нэр аль хэдийн бүртгэгдсэн байна. Өөр нэр сонгоно уу!";
+                status.innerText = "Энэ нэр бүртгэгдсэн байна. Өөр нэр сонгоно уу!";
             } else {
-                localStorage.setItem('devnmd_username', username);
                 localStorage.removeItem('claim_username');
                 status.innerText = "Амжилттай! Шилжиж байна...";
-                setTimeout(() => {
-                    window.location.href = '/settings';
-                }, 1000);
+                setTimeout(() => { window.location.href = '/settings'; }, 1000);
             }
         }
 
