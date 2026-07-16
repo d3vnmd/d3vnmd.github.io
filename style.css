@@ -1,1 +1,316 @@
+/* style.css */
+:root {
+    --bg-blur: 10px;
+    --bg-opacity: 0.6;
+    --accent-color: #bd00ff;
+    --text-color: #ffffff;
+    --font-family: 'Segoe UI', sans-serif;
+    --cursor-type: default;
+}
 
+body {
+    background-color: #050409;
+    color: var(--text-color);
+    font-family: var(--font-family);
+    margin: 0;
+    overflow-x: hidden;
+    cursor: var(--cursor-type) !important;
+    perspective: 1000px;
+}
+
+/* CRT Пиксел Тор эффект (Scanlines Overlay) */
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 999;
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+}
+
+#bg-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -2;
+    background-size: cover;
+    background-position: center;
+    pointer-events: none;
+}
+
+#bg-video {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* 🔊 Хөгжим Тоглуулагч UI */
+#music-widget {
+    position: fixed;
+    top: 20px; left: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(13, 11, 22, 0.85);
+    border: 1px solid rgba(189, 0, 255, 0.3);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 0 15px rgba(189,0,255,0.2);
+    transition: 0.3s ease-in-out;
+}
+
+#music-widget:hover {
+    border-color: #00f0ff;
+    box-shadow: 0 0 20px rgba(0,240,255,0.4);
+}
+
+.music-btn {
+    background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center;
+}
+
+.volume-bar {
+    width: 0; transition: width 0.3s ease-in-out; overflow: hidden; display: flex; align-items: center;
+}
+
+#music-widget:hover .volume-bar {
+    width: 80px;
+}
+
+.volume-bar input[type="range"] {
+    width: 70px; accent-color: var(--accent-color);
+}
+
+/* ⚙️ Тохиргооны товчлуур */
+#settings-shortcut-btn {
+    position: fixed;
+    top: 20px; right: 20px;
+    background: rgba(10, 10, 18, 0.8);
+    border: 1px solid var(--accent-color);
+    color: #fff; padding: 10px 20px;
+    border-radius: 12px; font-weight: bold;
+    text-decoration: none; display: none;
+    z-index: 1000;
+    transition: 0.2s;
+}
+
+#settings-shortcut-btn:hover {
+    background: var(--accent-color);
+    color: #000;
+}
+
+/* 🔗 Баталгаажуулах цонх (Modal) */
+.confirm-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-card {
+    background: #0f0f16;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 35px rgba(189,0,255,0.25);
+    position: relative;
+    text-align: center;
+}
+
+.confirm-title {
+    font-size: 20px; font-weight: bold; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between; align-items: center;
+}
+
+.confirm-close {
+    cursor: pointer; color: #8a8a9e; font-size: 18px;
+}
+
+.confirm-subtitle {
+    color: #8a8a9e; font-size: 15px; margin-bottom: 10px;
+}
+
+.confirm-domain-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #fff;
+    display: inline-block;
+    margin-bottom: 25px;
+}
+
+.confirm-actions {
+    display: flex; gap: 12px;
+}
+
+.confirm-btn {
+    flex: 1; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; border: none; transition: 0.2s;
+}
+
+.confirm-btn-yes { background: #5a189a; color: white; }
+.confirm-btn-yes:hover { background: #7b2cbf; }
+.confirm-btn-no { background: rgba(255,255,255,0.05); color: #8a8a9e; }
+.confirm-btn-no:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* 👾 Глитч нэрний анимаци */
+.glitch {
+    position: relative;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0.05em 0 0 rgba(255, 0, 0, .75), -0.025em -0.05em 0 rgba(0, 255, 0, .75), 0.025em 0.05em 0 rgba(0, 0, 255, .75);
+    animation: glitch-anim 500ms infinite;
+}
+
+@keyframes glitch-anim {
+    0% {
+        text-shadow: 1px 0 0 rgba(255,0,0,0.5), -1px -1px 0 rgba(0,255,0,0.3), 0 1px 0 rgba(0,0,255,0.5);
+    }
+    50% {
+        text-shadow: -1px 0 0 rgba(255,0,0,0.5), 1px 1px 0 rgba(0,255,0,0.3), -1px -1px 0 rgba(0,0,255,0.5);
+    }
+    100% {
+        text-shadow: 1px -1px 0 rgba(255,0,0,0.5), -1px 1px 0 rgba(0,255,0,0.3), 1px 1px 0 rgba(0,0,255,0.5);
+    }
+}
+
+/* 🏠 Гэр нүүр хуудасны загвар */
+.landing-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.navbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 30px; background: rgba(13, 11, 22, 0.7);
+    border: 1px solid rgba(138, 43, 226, 0.2); border-radius: 50px;
+    backdrop-filter: blur(10px); margin-top: 20px;
+}
+
+.logo {
+    font-size: 24px; font-weight: 900;
+    background: linear-gradient(45deg, #00f0ff, #bd00ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-decoration: none;
+}
+
+.nav-links { display: flex; gap: 25px; align-items: center; }
+.nav-link { color: #a5a5b5; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.2s; }
+.nav-link:hover { color: #fff; }
+
+.nav-btn {
+    background: rgba(189, 0, 255, 0.2); border: 1px solid #bd00ff;
+    color: #fff; padding: 10px 22px; border-radius: 50px;
+    text-decoration: none; font-weight: bold; font-size: 14px;
+    transition: 0.2s; box-shadow: 0 0 15px rgba(189,0,255,0.3);
+}
+.nav-btn:hover { background: #bd00ff; box-shadow: 0 0 20px rgba(189,0,255,0.6); }
+
+.hero { text-align: center; padding: 100px 20px 60px 20px; }
+.hero h1 {
+    font-size: 56px; font-weight: 900; margin: 0 0 20px 0;
+    background: linear-gradient(to right, #fff, #a5a5b5);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p { font-size: 18px; color: #8a8a9e; max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6; }
+.hero-btns { display: flex; gap: 15px; justify-content: center; }
+
+.stats-section {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin-bottom: 80px;
+}
+
+.stat-card {
+    background: rgba(13, 11, 22, 0.4); border: 1px solid rgba(138, 43, 226, 0.1);
+    border-radius: 20px; padding: 30px; text-align: center; backdrop-filter: blur(10px);
+}
+.stat-card h3 { margin: 0 0 10px 0; color: #8a8a9e; font-size: 14px; text-transform: uppercase; }
+.stat-card p { margin: 0; font-size: 36px; font-weight: 900; color: #00f0ff; }
+
+.leaderboard-section {
+    background: rgba(13, 11, 22, 0.4); border: 1px solid rgba(138, 43, 226, 0.1);
+    border-radius: 24px; padding: 40px; margin-bottom: 80px; backdrop-filter: blur(10px);
+}
+.leaderboard-section h2 { margin-top: 0; font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 30px; text-align: center; }
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+th { color: #8a8a9e; font-size: 12px; text-transform: uppercase; }
+.rank { font-weight: 900; font-size: 16px; }
+
+.user-cell { display: flex; align-items: center; gap: 12px; }
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #bd00ff; }
+.user-link { color: #00f0ff; text-decoration: none; font-weight: bold; }
+
+/* 👤 ХЭРЭГЛЭГЧИЙН ПРОФАЙЛ КАРТ */
+.profile-container { 
+    width: 100%; max-width: 420px; padding: 20px;
+    transform-style: preserve-3d; box-sizing: border-box;
+    margin: 0 auto; display: flex; align-items: center; min-height: 100vh;
+}
+
+.profile-card {
+    background: rgba(10, 10, 18, var(--bg-opacity));
+    border: 1px solid var(--accent-color);
+    border-radius: 24px; padding: 40px 25px; text-align: center;
+    box-shadow: 0 0 30px rgba(189, 0, 255, 0.15);
+    backdrop-filter: blur(var(--bg-blur));
+    -webkit-backdrop-filter: blur(var(--bg-blur));
+    transform: translateZ(20px); transition: transform 0.1s ease-out;
+    position: relative; width: 100%;
+}
+
+.avatar {
+    width: 110px; height: 110px; border-radius: 50%;
+    border: 2px solid var(--accent-color); object-fit: cover;
+    margin-bottom: 20px; box-shadow: 0 0 20px rgba(189, 0, 255, 0.3);
+}
+
+.name { font-size: 26px; font-weight: 800; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;}
+.username { font-size: 14px; color: var(--accent-color); font-weight: 700; margin-bottom: 20px; }
+.bio { font-size: 14px; color: #a1a1b3; margin-bottom: 30px; line-height: 1.6; }
+
+.links-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;}
+
+.link-btn-wrapper { width: 100%; display: block; text-decoration: none; box-sizing: border-box; cursor: pointer; }
+
+.link-btn {
+    background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff; padding: 16px; border-radius: 14px; font-weight: 600; font-size: 14px;
+    transition: all 0.25s ease-in-out; text-align: center; width: 100%; display: block; box-sizing: border-box;
+}
+
+.link-btn-wrapper:hover .link-btn {
+    background: var(--accent-color); color: #000; border-color: var(--accent-color);
+    transform: translateY(-3px); box-shadow: 0 5px 15px rgba(189, 0, 255, 0.3);
+}
+
+.badge-svg {
+    width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 5px;
+}
+
+.like-btn {
+    background: rgba(255, 0, 127, 0.1); border: 1px solid rgba(255, 0, 127, 0.3);
+    color: #ff007f; padding: 14px; border-radius: 14px; cursor: pointer;
+    font-weight: bold; transition: 0.2s; width: 100%; box-sizing: border-box; font-size: 15px;
+}
+.like-btn:hover { background: #ff007f; color: white; transform: scale(1.02); }
+
+@media (max-width: 768px) {
+    .navbar { border-radius: 20px; padding: 10px 20px; }
+    .nav-links { display: none; }
+    .hero h1 { font-size: 36px; }
+}
