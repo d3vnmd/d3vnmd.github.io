@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Нэр олдоогүй | devnmd</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #030206; color: #ffffff;
@@ -23,11 +24,6 @@
             text-align: center; width: 100%; max-width: 420px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 35px rgba(0, 242, 254, 0.15);
             backdrop-filter: blur(20px);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes slideUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
         }
         h1 {
             font-size: 78px; margin: 0 0 10px 0; font-weight: 900;
@@ -39,7 +35,7 @@
         .claim-btn {
             background: linear-gradient(135deg, #00f2fe, #9b51e0); color: #000; border: none;
             padding: 16px 28px; border-radius: 14px; font-size: 16px; font-weight: bold;
-            cursor: pointer; width: 100%; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer; width: 100%; transition: all 0.3s ease;
             box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
         }
         .claim-btn:hover {
@@ -54,21 +50,38 @@
 </head>
 <body>
 
-    <div class="card">
-        <h1>404</h1>
-        <h2>Нэр олдоогүй!</h2>
-        <p>Энэ хэрэглэгчийн нэр одоогоор бүртгэгдээгүй байна. Та дараах нэрийг өөрийн болгон авахыг хүсэж байна уу?</p>
-        <div class="claim-username-tag" id="username-display">@username</div>
-        <button class="claim-btn" onclick="claimUsername()">Тийм, одоо авах!</button>
+    <div class="card" id="card-content">
+        <p>Ачаалж байна...</p>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const claimUser = urlParams.get('claim') || "username";
-        document.getElementById('username-display').innerText = `@${claimUser}`;
+        const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function claimUsername() {
-            localStorage.setItem('claim_username', claimUser);
+        // REGEX CRASH FIX: Төгс ажиллах зөв regular expression бичиглэл
+        let path = window.location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+
+        if (path === "" || path === "settings" || path === "register" || path === "username") {
+            window.location.href = "/" + path;
+        } else {
+            supabaseClient.from('profiles').select('username').eq('username', path).maybeSingle().then(({data, error}) => {
+                if (data) {
+                    window.location.href = "/?u=" + path;
+                } else {
+                    document.getElementById('card-content').innerHTML = `
+                        <h1>404</h1>
+                        <h2>Нэр олдоогүй!</h2>
+                        <p>Энэ хэрэглэгчийн нэр одоогоор бүртгэгдээгүй байна. Та дараах нэрийг өөрийн болгон авахыг хүсэж байна уу?</p>
+                        <div class="claim-username-tag">@${path}</div>
+                        <button class="claim-btn" onclick="claimUsername('${path}')">Тийм, одоо авах!</button>
+                    `;
+                }
+            });
+        }
+
+        function claimUsername(username) {
+            localStorage.setItem('claim_username', username);
             window.location.href = `/register`;
         }
     </script>
