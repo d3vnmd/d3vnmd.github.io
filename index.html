@@ -12,9 +12,16 @@
     <div id="bg-container"></div>
     <video id="bg-video" autoplay loop muted playsinline style="display:none;"></video>
 
-    <a href="/settings" id="settings-shortcut-btn">⚙️ Тохиргоо</a>
+    <!-- 🌐 Language Switcher -->
+    <div style="position: fixed; top: 25px; right: 25px; z-index: 10000; display: flex; gap: 8px;">
+        <select id="lang-selector" onchange="switchLanguage(this.value)" style="background: rgba(8, 7, 13, 0.85); border: 1px solid var(--accent-teal); color: #fff; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-weight: bold;">
+            <option value="mn">Mongolian (MN)</option>
+            <option value="en">English (EN)</option>
+        </select>
+        <a href="/settings" id="settings-shortcut-btn" style="position:static;">⚙️</a>
+    </div>
 
-    <!-- 🔊 Volume UI Widget (Top-left Spacing) -->
+    <!-- 🔊 Volume Controller Widget -->
     <div id="music-widget" style="display: none;">
         <button class="music-btn" onclick="toggleMute()">
             <svg id="volume-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -27,42 +34,44 @@
         </div>
     </div>
 
-    <!-- 🔗 Domain Redirect Confirmation Modal (Screenshot 134057) -->
+    <!-- 🔗 Link Confirmation Modal -->
     <div class="confirm-modal-overlay" id="confirm-modal">
         <div class="confirm-card">
             <div class="confirm-title">
-                <span>Итгэлтэй байна уу?</span>
+                <span id="txt-are-you-sure">Итгэлтэй байна уу?</span>
                 <span class="confirm-close" onclick="closeConfirmModal()">✕</span>
             </div>
-            <p class="confirm-subtitle">Та дараах хаяг руу шилжих гэж байна:</p>
+            <p class="confirm-subtitle" id="txt-redirect-warning">Та дараах гадны хаяг руу шилжих гэж байна:</p>
             <div class="confirm-domain-box" id="modal-target-url">Loading...</div>
             <div class="confirm-actions">
-                <button class="confirm-btn confirm-btn-no" onclick="closeConfirmModal()">Цуцлах</button>
+                <button class="confirm-btn confirm-btn-no" onclick="closeConfirmModal()" id="btn-cancel">Цуцлах</button>
                 <button class="confirm-btn confirm-btn-yes" id="modal-confirm-btn">Шилжих</button>
             </div>
         </div>
     </div>
 
-    <!-- 👤 Unregistered Guest Like Alert Modal -->
+    <!-- 👤 Guest Like Warning Modal -->
     <div class="confirm-modal-overlay" id="guest-modal">
-        <div class="confirm-card" style="border-color:#ff0055; box-shadow: 0 0 40px rgba(255,0,85,0.25);">
+        <div class="confirm-card" style="border-color:#ff0055; box-shadow: 0 0 45px rgba(255,0,85,0.35);">
             <div class="confirm-title" style="color:#ff0055;">
-                <span>Нэвтрэх шаардлагатай!</span>
+                <span id="txt-auth-req">Нэвтрэх шаардлагатай!</span>
                 <span class="confirm-close" onclick="closeGuestModal()">✕</span>
             </div>
-            <p style="color:#8a8a9e; font-size:14px; margin-bottom:25px; line-height:1.6;">
-                Зөвхөн бүртгэлтэй хэрэглэгчид бусдад лайк дарах боломжтой. Та системд бүртгүүлэх эсвэл нэвтэрнэ үү.
+            <p style="color:#8a8a9e; font-size:15px; margin-bottom:25px; line-height:1.6;" id="txt-guest-error">
+                Зөвхөн бүртгэлтэй хэрэглэгчид бусдын хуудсанд лайк дарах боломжтой. Та системд бүртгүүлэх эсвэл нэвтэрнэ үү.
             </p>
             <div class="confirm-actions">
-                <button class="confirm-btn confirm-btn-no" onclick="closeGuestModal()">Хаах</button>
-                <button class="confirm-btn confirm-btn-yes" style="background:#ff0055; box-shadow: 0 0 20px rgba(255,0,85,0.4);" onclick="window.location.href='/register'">Нэвтрэх</button>
+                <button class="confirm-btn confirm-btn-no" onclick="closeGuestModal()" id="btn-close">Хаах</button>
+                <button class="confirm-btn confirm-btn-yes" style="background:#ff0055; box-shadow: 0 0 20px rgba(255,0,85,0.4);" onclick="window.location.href='/register'" id="btn-login-redirect">Нэвтрэх</button>
             </div>
         </div>
     </div>
 
     <!-- Click to Enter Overlay -->
     <div id="enter-overlay" style="display: none;" onclick="startBiolink()">
-        [ Click to Enter ]
+<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
+<polygon fill="#42a5f5" points="29.62,3 33.053,8.308 39.367,8.624 39.686,14.937 44.997,18.367 42.116,23.995 45,29.62 39.692,33.053 39.376,39.367 33.063,39.686 29.633,44.997 24.005,42.116 18.38,45 14.947,39.692 8.633,39.376 8.314,33.063 3.003,29.633 5.884,24.005 3,18.38 8.308,14.947 8.624,8.633 14.937,8.314 18.367,3.003 23.995,5.884"></polygon><polygon fill="#fff" points="21.396,31.255 14.899,24.76 17.021,22.639 21.428,27.046 30.996,17.772 33.084,19.926"></polygon>
+</svg> 
     </div>
 
     <div id="page-content">Уншиж байна...</div>
@@ -82,48 +91,170 @@
 
         const pageContent = document.getElementById('page-content');
         let audioPlayer = null;
-        let isLiking = false; // Debounce lock to prevent duplicate concurrent DB likes (Spam safety)
+        let isLiking = false;
+        let currentLang = localStorage.getItem('devnmd_lang') || 'mn';
 
-        const SVGBadges = {
-            Verified: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#00f0ff"/></svg>`,
-            Admin: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#bd00ff"/></svg>`,
-            Premium: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 12h5v10h10V12h5L12 2z" fill="#ff007f"/></svg>`
+        // 🌟 ОЛОН ХЭЛНИЙ ОРЧУУЛГЫН СИСТЕМ (Монгол ба Англи хэл)
+        const translations = {
+            mn: {
+                are_you_sure: "Итгэлтэй байна уу?",
+                redirect_warning: "Та дараах гадны хаяг руу шилжих гэж байна:",
+                auth_req: "Нэвтрэх шаардлагатай!",
+                guest_error: "Зөвхөн бүртгэлтэй хэрэглэгчид бусдын хуудсанд лайк дарах боломжтой. Та системд бүртгүүлэх эсвэл нэвтэрнэ үү.",
+                btn_cancel: "Цуцлах",
+                btn_close: "Хаах",
+                btn_login: "Нэвтрэх",
+                btn_register: "Бүртгүүлэх",
+                hero_title: "Хүссэн бүх зүйл тань, яг энд.",
+                hero_desc: "devnmd бол орчин үеийн, маш олон төрлийн үйлдэлтэй сошиал холбоосын нэрийн хуудас үүсгэх хамгийн шилдэг платформ юм.",
+                start_free: "Үнэгүй эхлэх",
+                total_users: "Нийт Хэрэглэгчид",
+                total_likes: "Нийт Лайк",
+                leaderboard: "🏆 Шилдэг Тэргүүлэгчид",
+                pricing_title: "💎 Дээд Зэрэглэлийн Багцууд",
+                perk_badge: "Exclusive Тэмдэг (Сонгох боломжтой)",
+                perk_layout: "Профайлын хувийн загварууд",
+                perk_fonts: "Дурын бичгийн хэлбэрүүд (Custom Fonts)",
+                perk_typewriter: "Typewriter Текст анимаци",
+                perk_effects: "Тусгай арын эффектүүд (Special FX)",
+                perk_custom: "Нарийвчилсан тохиргоонууд",
+                perk_seo: "Metadata & SEO Тохиргоо",
+                loading: "Уншиж байна...",
+                not_found: "404 Олдоогүй"
+            },
+            en: {
+                are_you_sure: "Are you sure?",
+                redirect_warning: "You are going to visit external link:",
+                auth_req: "Authentication Required!",
+                guest_error: "Only registered users can like bios. Please register or login to continue.",
+                btn_cancel: "Cancel",
+                btn_close: "Close",
+                btn_login: "Login",
+                btn_register: "Register",
+                hero_title: "Everything you desire, right here.",
+                hero_desc: "devnmd is the ultimate highly-customizable biolink platform for your digital identity and socials.",
+                start_free: "Get Started Free",
+                total_users: "Total Users",
+                total_likes: "Total Likes",
+                leaderboard: "🏆 Shiniest Leaders",
+                pricing_title: "💎 Premium Perks & Pricing",
+                perk_badge: "Exclusive Badges (Fully Custom)",
+                perk_layout: "Advanced Profile Layouts",
+                perk_fonts: "Custom Fonts Support",
+                perk_typewriter: "Typewriter Text Animations",
+                perk_effects: "Special FX Background Effects",
+                perk_custom: "Deep Bio Customizations",
+                perk_seo: "Metadata & Google SEO Customization",
+                loading: "Loading...",
+                not_found: "404 Not Found"
+            }
         };
 
+        // 👑 СҮПЭР BADGE-ҮҮДИЙН САН (Энд чи хүссэн SVG кодоо шууд хуулж тавина)
+        const SVGBadges = {
+            Verified: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#00f2fe"/></svg>`,
+            Admin: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#9b51e0"/></svg>`,
+            Premium: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 12h5v10h10V12h5L12 2z" fill="#00f2fe"/></svg>`
+        };
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('devnmd_lang', lang);
+            init();
+        }
+
         async function init() {
+            document.getElementById('lang-selector').value = currentLang;
+            const t = translations[currentLang];
+
+            // Орчуулгуудыг вэб рүү шууд шингээх
+            document.getElementById('txt-are-you-sure').innerText = t.are_you_sure;
+            document.getElementById('txt-redirect-warning').innerText = t.redirect_warning;
+            document.getElementById('txt-auth-req').innerText = t.auth_req;
+            document.getElementById('txt-guest-error').innerText = t.guest_error;
+            document.getElementById('btn-cancel').innerText = t.btn_cancel;
+            document.getElementById('btn-close').innerText = t.btn_close;
+            document.getElementById('btn-login-redirect').innerText = t.btn_login;
+
             if (!username || username === "") {
                 pageContent.innerHTML = `
                     <div class="landing-page">
                         <nav class="navbar">
                             <a href="/" class="logo">devnmd</a>
                             <div class="nav-links">
-                                <a href="#leaderboard" class="nav-link">Тэргүүлэгчид</a>
-                                <a href="https://discord.gg" target="_blank" class="nav-link">Discord</a>
-                                <a href="/register" class="nav-link">Нэвтрэх</a>
+                                <a href="#leaderboard" class="nav-link">${t.leaderboard}</a>
+                                <a href="#pricing" class="nav-link">Pricing</a>
+                                <a href="/register" class="nav-link">${t.btn_login}</a>
                             </div>
-                            <a href="/register" class="nav-btn">Бүртгүүлэх</a>
+                            <a href="/register" class="nav-btn">${t.btn_register}</a>
                         </nav>
                         <header class="hero">
-                            <h1>Хүссэн бүх зүйл тань, яг энд.</h1>
-                            <p>devnmd бол орчин үеийн, маш олон төрлийн үйлдэлтэй сошиал холбоосын нэрийн хуудас үүсгэх хамгийн шилдэг платформ юм.</p>
+                            <h1>${t.hero_title}</h1>
+                            <p>${t.hero_desc}</p>
                             <div class="hero-btns">
-                                <a href="/register" class="nav-btn" style="padding: 15px 35px; font-size:16px;">Үнэгүй эхлэх</a>
+                                <a href="/register" class="nav-btn" style="padding: 18px 40px; font-size:16px;">${t.start_free}</a>
                             </div>
                         </header>
-                        <section class="stats-section">
-                            <div class="stat-card"><h3>Нийт Хэрэглэгчид</h3><p id="total-users">0</p></div>
-                            <div class="stat-card"><h3>Нийт Лайк</h3><p id="total-likes">0</p></div>
+
+                        <!-- Pricing Perks & Features Grid -->
+                        <section class="pricing-section" id="pricing">
+                            <h2>${t.pricing_title}</h2>
+                            <div class="pricing-grid">
+                                <div class="price-card">
+                                    <h3>Basic Perks</h3>
+                                    <div class="price-value">FREE</div>
+                                    <ul class="perk-list">
+                                        <li class="perk-item">Standard Biolink Page</li>
+                                        <li class="perk-item">Basic Background Music</li>
+                                        <li class="perk-item">Up to 3 Social Links</li>
+                                    </ul>
+                                    <a href="/register" class="nav-btn">Start Free</a>
+                                </div>
+                                <div class="price-card premium">
+                                    <h3>Premium Upgrades</h3>
+                                    <div class="price-value">$2.99</div>
+                                    <ul class="perk-list">
+                                        <li class="perk-item">${t.perk_badge}</li>
+                                        <li class="perk-item">${t.perk_layout}</li>
+                                        <li class="perk-item">${t.perk_fonts}</li>
+                                        <li class="perk-item">${t.perk_typewriter}</li>
+                                        <li class="perk-item">${t.perk_effects}</li>
+                                        <li class="perk-item">${t.perk_custom}</li>
+                                        <li class="perk-item">${t.perk_seo}</li>
+                                    </ul>
+                                    <a href="/register" class="nav-btn" style="border-color: var(--accent-violet);">Unlock Perks</a>
+                                </div>
+                            </div>
                         </section>
+
+                        <section class="stats-section">
+                            <div class="stat-card"><h3>${t.total_users}</h3><p id="total-users">0</p></div>
+                            <div class="stat-card"><h3>${t.total_likes}</h3><p id="total-likes">0</p></div>
+                        </section>
+
                         <section class="leaderboard-section" id="leaderboard">
-                            <h2>🏆 Шилдэг Тэргүүлэгчид</h2>
+                            <h2>${t.leaderboard}</h2>
                             <div class="table-container">
                                 <table>
-                                    <thead><tr><th>Байр</th><th>Хэрэглэгч</th><th>Тэмдэг</th><th>Нийт Лайк</th></tr></thead>
-                                    <tbody id="leaderboard-body"><tr><td colspan="4">Ачаалж байна...</td></tr></tbody>
+                                    <thead><tr><th>Rank</th><th>User</th><th>Badge</th><th>Likes</th></tr></thead>
+                                    <tbody id="leaderboard-body"><tr><td colspan="4">${t.loading}</td></tr></tbody>
                                 </table>
                             </div>
                         </section>
                     </div>
+
+                    <!-- Footer Section with Policies -->
+                    <footer class="footer">
+                        <div class="footer-links">
+                            <a href="#" class="footer-link">Terms of Service</a>
+                            <a href="#" class="footer-link">Privacy Policy</a>
+                            <a href="#" class="footer-link">Copyright Policy</a>
+                            <a href="#" class="footer-link">Website Status</a>
+                        </div>
+                        <div class="footer-copyright">
+                            &copy; 2026 devnmd biolinks. All rights reserved. Not affiliated with guns.lol.
+                        </div>
+                    </footer>
                 `;
                 fetchStatsAndLeaderboard();
             } else {
@@ -150,15 +281,15 @@
                         
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td class="rank">#${idx + 1}</td>
+                            <td>#${idx + 1}</td>
                             <td>
                                 <div class="user-cell">
                                     <img src="${user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + user.username}" class="user-avatar">
                                     <a href="/${user.username}" target="_blank" class="user-link">@${user.username}</a>
                                 </div>
                             </td>
-                            <td>${badgeStr || 'Хэрэглэгч'}</td>
-                            <td style="font-weight:bold; color:#ff007f;">❤️ ${user.likes_count || 0}</td>
+                            <td>${badgeStr || 'User'}</td>
+                            <td style="font-weight:bold; color:var(--accent-teal);">❤️ ${user.likes_count || 0}</td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -176,7 +307,7 @@
                         document.getElementById('enter-overlay').style.display = 'none';
                         pageContent.innerHTML = `
                             <div class="profile-container">
-                                <div class="profile-card" style="border-color: #ff0055;"><h2 style="color: #ff0055;">ХААГДСАН</h2><p>Дүрэм зөрчсөн тул хаасан байна.</p></div>
+                                <div class="profile-card" style="border-color: #ff0055;"><h2 style="color: #ff0055;">BANNED</h2><p>This user has been suspended.</p></div>
                             </div>
                         `;
                         return;
@@ -184,8 +315,7 @@
 
                     document.documentElement.style.setProperty('--bg-blur', `${user.bg_blur || 10}px`);
                     document.documentElement.style.setProperty('--bg-opacity', user.bg_opacity || 0.6);
-                    document.documentElement.style.setProperty('--accent-color', user.accent_color || '#bd00ff');
-                    document.documentElement.style.setProperty('--text-color', user.text_color || '#ffffff');
+                    document.documentElement.style.setProperty('--accent-teal', user.accent_color || '#00f2fe');
                     document.documentElement.style.setProperty('--font-family', user.font_family || 'Segoe UI');
 
                     if (user.background_url) {
@@ -221,7 +351,7 @@
                         if (value) {
                             let url = value;
                             if (platform === 'discord' && !value.startsWith('http')) {
-                                linksHTML += `<div class="link-btn-wrapper" onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID санах ойд хуулагдлаа!');"><div class="link-btn">DISCORD ID</div></div>`;
+                                linksHTML += `<div class="link-btn-wrapper" onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID Copied!');"><div class="link-btn">DISCORD ID</div></div>`;
                                 continue;
                             }
                             if (platform === 'instagram' && !value.startsWith('http')) url = `https://instagram.com/${value}`;
@@ -248,16 +378,17 @@
                                 <img src="${user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + username}" class="avatar">
                                 <div class="name glitch" data-text="${user.name}">${user.name} ${badgeHTML}</div>
                                 <div class="username">@${username}</div>
-                                <div class="bio">${user.bio || 'Танилцуулга оруулаагүй байна.'}</div>
-                                <div class="links-container">${linksHTML || '<p style="color:#444;">Холбоос байхгүй.</p>'}</div>
-                                <button class="like-btn" onclick="handleLike(event)">❤️ Лайк: <span id="like-count">${user.likes_count || 0}</span></button>
+                                <div class="bio">${user.bio || ''}</div>
+                                <div class="links-container">${linksHTML || '<p style="color:#444;">No links.</p>'}</div>
+                                <button class="like-btn" onclick="handleLike(event)">❤️ Like: <span id="like-count">${user.likes_count || 0}</span></button>
                             </div>
                         </div>
                     `;
 
                     init3DTilt();
                 } else {
-                    pageContent.innerHTML = `<div class="profile-container"><div class="profile-card"><h2>404 Олдоогүй</h2></div></div>`;
+                    // Хэрэв хэрэглэгч олдохгүй бол энэ нэрээр бүртгүүлж авах уу гэсэн өвөрмөц 404 хуудас ажиллана.
+                    window.location.href = `/404.html?claim=${username}`;
                 }
             } catch (err) { console.error(err); }
         }
@@ -294,7 +425,7 @@
 
             const likedKey = `liked_${username}`;
             if (localStorage.getItem(likedKey)) {
-                alert("Та аль хэдийн Лайк дарсан байна!");
+                alert("You already liked this bio!");
                 return;
             }
 
@@ -305,7 +436,7 @@
                 const count = document.getElementById('like-count');
                 if (count) count.innerText = parseInt(count.innerText) + 1;
             }
-            setTimeout(() => { isLiking = false; }, 1000); // 1-sec cooldown prevents dual DB click fires (spam safety)
+            setTimeout(() => { isLiking = false; }, 1000); // Cooldown to prevent dual DB click fire (Spam safety)
         }
 
         function startBiolink() {

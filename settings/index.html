@@ -14,7 +14,7 @@
         <button class="menu-btn active" onclick="showTab('account')">👤 Профайл</button>
         <button class="menu-btn" onclick="showTab('customize')">🎨 Загварчилгаа</button>
         <button class="menu-btn" onclick="showTab('links')">🔗 Холбоосууд</button>
-        <button class="menu-btn" onclick="showTab('templates')">💎 Загварууд</button>
+        <button class="menu-btn" onclick="showTab('verification')">🏅 Баталгаажуулалт</button>
         <button id="admin-menu-btn" class="menu-btn" style="display:none; color:#00f0ff;" onclick="showTab('admin')">👑 Админ Панель</button>
         <a href="#" id="my-page-btn" target="_blank" class="menu-btn" style="color:#bd00ff; text-decoration:none;">👁️ Миний хуудас</a>
         <button class="menu-btn" style="color: #ff0055;" onclick="logout()">❌ Гарах</button>
@@ -39,20 +39,16 @@
                         <button style="margin-top:10px;" onclick="changeUsername()">Шинэчлэх</button>
                     </div>
                     <div class="group">
-                        <label>Дэлгэцийн нэр</label>
-                        <input type="text" id="profile-name" oninput="updateLivePreview()">
+                        <label>Дэлгэцийн нэр (Дээд тал нь 30 үсэг)</label>
+                        <input type="text" id="profile-name" maxlength="30" oninput="updateLivePreview()">
                     </div>
                     <div class="group">
                         <label>Танилцуулга (Bio)</label>
                         <textarea id="profile-bio" rows="3" oninput="updateLivePreview()"></textarea>
                     </div>
                     <div class="group">
-                        <label>Профайл зураг (Direct Link оруулах - Хамгийн найдвартай)</label>
+                        <label>Профайл зураг (Direct Link - Хамгийн найдвартай)</label>
                         <input type="text" id="profile-avatar-url" placeholder="https://example.com/image.png" oninput="updateLivePreview()">
-                    </div>
-                    <div class="group">
-                        <label>Эсвэл Профайл зураг сонгох (Файлаар)</label>
-                        <input type="file" id="avatar-file" accept="image/*" onchange="previewSelectedAvatar(this)">
                     </div>
                 </div>
             </div>
@@ -70,12 +66,8 @@
                         </select>
                     </div>
                     <div class="group" id="bg-url-group">
-                        <label>Арын фон линк (Direct Link - Хамгийн найдвартай)</label>
+                        <label>Арын фон линк (Direct Link)</label>
                         <input type="text" id="bg-url-input" placeholder="https://example.com/background.gif" oninput="updateLivePreview()">
-                    </div>
-                    <div class="group" id="file-upload-group" style="display:none;">
-                        <label>Эсвэл Файл Сонгох (Файлаар)</label>
-                        <input type="file" id="bg-file" accept="image/*,video/*">
                     </div>
                     <div class="group">
                         <label>Фоны бүрсийлт (Blur: 0px - 30px)</label>
@@ -86,29 +78,11 @@
                         <input type="range" id="bg-opacity" min="0.1" max="1" step="0.05" value="0.6" oninput="updateLivePreview()">
                     </div>
                 </div>
-
                 <div class="card">
-                    <h3>Үсэг ба Хяналт</h3>
-                    <div class="group">
-                        <label>Үсгийн Загвар (Font)</label>
-                        <select id="font-family" onchange="updateLivePreview()">
-                            <option value="Segoe UI">Segoe UI</option>
-                            <option value="Courier New">Courier New (Hacker)</option>
-                            <option value="Georgia">Georgia (Classic)</option>
-                            <option value="cursive">Cursive (Sakura)</option>
-                        </select>
-                    </div>
-                    <div class="group">
-                        <label>Хулганы заагч (Custom Cursor Линк)</label>
-                        <input type="text" id="custom-cursor" placeholder="https://example.com/cursor.png">
-                    </div>
+                    <h3>Хөгжим ба Хулганы заагч</h3>
                     <div class="group">
                         <label>Арын Хөгжим Линк (Direct MP3 Link)</label>
                         <input type="text" id="music-url-input" placeholder="https://example.com/song.mp3">
-                    </div>
-                    <div class="group">
-                        <label>Эсвэл Хөгжмийн Файл Сонгох (MP3)</label>
-                        <input type="file" id="music-file" accept="audio/*">
                     </div>
                 </div>
             </div>
@@ -116,44 +90,33 @@
             <!-- 3. LINKS TAB -->
             <div id="tab-links" class="tab-section">
                 <div class="card">
-                    <h3>Сошиал Холбоос (Зөвхөн нэрээ бичнэ)</h3>
-                    <div class="group"><label>TikTok</label><input type="text" id="link-tiktok" placeholder="хэрэглэгчийн нэр" oninput="updateLivePreview()"></div>
-                    <div class="group"><label>Instagram</label><input type="text" id="link-instagram" placeholder="хэрэглэгчийн нэр" oninput="updateLivePreview()"></div>
-                    <div class="group"><label>GitHub</label><input type="text" id="link-github" placeholder="хэрэглэгчийн нэр" oninput="updateLivePreview()"></div>
-                    <div class="group"><label>YouTube</label><input type="text" id="link-youtube" placeholder="@-тэй нэр" oninput="updateLivePreview()"></div>
-                    <div class="group"><label>Steam</label><input type="text" id="link-steam" placeholder="профайл ID" oninput="updateLivePreview()"></div>
-                    <div class="group"><label>Discord ID</label><input type="text" id="link-discord" placeholder="ID эсвэл нэр" oninput="updateLivePreview()"></div>
-                </div>
-
-                <div class="card">
-                    <h3>Дурын холбоос нэмэх (Custom Links)</h3>
-                    <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-                        <input type="text" id="custom-title" placeholder="Товчны нэр" style="flex:1;">
-                        <input type="text" id="custom-url" placeholder="Линк (https://...)" style="flex:2;">
-                        <button onclick="addCustomLink()">Нэмэх</button>
-                    </div>
-                    <div id="custom-links-list"></div>
+                    <h3>Сошиал Холбоос</h3>
+                    <div class="group"><label>TikTok</label><input type="text" id="link-tiktok" placeholder="username" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>Instagram</label><input type="text" id="link-instagram" placeholder="username" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>GitHub</label><input type="text" id="link-github" placeholder="username" oninput="updateLivePreview()"></div>
+                    <div class="group"><label>Discord ID</label><input type="text" id="link-discord" placeholder="username" oninput="updateLivePreview()"></div>
                 </div>
             </div>
 
-            <!-- 4. TEMPLATES TAB -->
-            <div id="tab-templates" class="tab-section">
+            <!-- 4. VERIFICATION REQUEST TAB -->
+            <div id="tab-verification" class="tab-section">
                 <div class="card">
-                    <h3>Системийн бэлэн загварууд</h3>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button onclick="applyTemplate('cyberpunk')" style="background:#00f0ff; color:#000;">Cyberpunk</button>
-                        <button onclick="applyTemplate('obsidian')" style="background:#111; color:#fff;">Obsidian</button>
-                        <button onclick="applyTemplate('sakura')" style="background:#ffb3d9; color:#000;">Sakura</button>
+                    <h3>🎖️ Баталгаажуулах тэмдэг хүсэх</h3>
+                    <p style="color:#8a8a9e; font-size:13px; line-height:1.6;">Манай системээс баталгаажуулсан цэнхэр тэмдэг авахын тулд доор өөрийн тайлбарыг үнэн зөв бичнэ үү. Тайлбар нь <strong>дор хаяж 20 үг, дээд тал нь 200 үгтэй</strong> байх ёстой.</p>
+                    <div class="group">
+                        <label>Хүсэлт гаргах шалтгаан (Үгийн тоо: <span id="reason-word-count" style="color:var(--accent-teal);">0</span>)</label>
+                        <textarea id="verification-reason" rows="6" placeholder="Жишээ: Би өөрийн YouTube суваг дээрээ 10,000 дагагчтай бөгөөд..." oninput="countWords(this.value)"></textarea>
+                        <button style="margin-top:15px; width:100%;" onclick="submitVerificationRequest()">Хүсэлт илгээх</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. 👑 ADMIN DASHBOARD TAB -->
+            <!-- 5. 👑 ADMIN DASHBOARD -->
             <div id="tab-admin" class="tab-section">
                 <div class="card">
                     <h3>👑 Админ Удирдлагын хэсэг</h3>
-                    <p style="color:#8a8a9e; font-size:13px;">Устгахгүйгээр хянах болон засах систем.</p>
-                    <div class="table-container" style="overflow-x:auto;">
+                    <p style="color:#8a8a9e; font-size:13px;">Вэбсайтын бүх хэрэглэгчдийг устгахгүйгээр хянах хэсэг.</p>
+                    <div style="overflow-x:auto;">
                         <table class="admin-table">
                             <thead>
                                 <tr>
@@ -169,6 +132,23 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="card" style="border-color: #00f2fe; margin-top:30px;">
+                    <h3>🎖️ Баталгаажуулах Хүсэлтүүд (Verified Requests)</h3>
+                    <p style="color:#8a8a9e; font-size:13px;">Хэрэглэгчдээс ирсэн шаардлага хангасан хүсэлтүүдийг хянах.</p>
+                    <div style="overflow-x:auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Хэрэглэгч</th>
+                                    <th>Шалтгаан/Тайлбар</th>
+                                    <th>Үйлдэл</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-req-rows"><tr><td colspan="3">Хүсэлт байхгүй байна.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <button class="save-btn" onclick="saveAllSettings()">💾 Бүх өөрчлөлтийг хадгалах</button>
@@ -177,11 +157,11 @@
 
         <!-- 📱 LIVE PREVIEW PANE -->
         <div class="preview-pane">
-            <h3 style="color:#00f0ff; font-size:14px; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Live Preview</h3>
+            <h3 style="color:#00f2fe; font-size:14px; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Live Preview</h3>
             <div class="preview-phone">
-                <div id="preview-avatar-box" style="width:70px; height:70px; border-radius:50%; background:#1c1a27; overflow:hidden; margin-bottom:15px; border: 2px solid #bd00ff;"><img id="preview-avatar" src="" style="width:100%; height:100%; object-fit:cover; display:none;"></div>
+                <div id="preview-avatar-box" style="width:70px; height:70px; border-radius:50%; background:#1c1a27; overflow:hidden; margin-bottom:15px; border: 2px solid #00f2fe;"><img id="preview-avatar" src="" style="width:100%; height:100%; object-fit:cover; display:none;"></div>
                 <div id="preview-name" style="font-weight:900; font-size:18px; margin-bottom:5px;">Нэр</div>
-                <div id="preview-username-text" style="font-size:11px; color:#bd00ff; margin-bottom:15px;">@username</div>
+                <div id="preview-username-text" style="font-size:11px; color:#00f2fe; margin-bottom:15px;">@username</div>
                 <div id="preview-bio" style="font-size:12px; color:#8a8a9e; text-align:center; max-width:80%; line-height:1.4; margin-bottom:20px;">Танилцуулга...</div>
                 <div id="preview-links" style="display:flex; flex-direction:column; gap:8px; width:90%;"></div>
             </div>
@@ -209,6 +189,36 @@
             loadProfileData();
         }
 
+        function countWords(str) {
+            const words = str.trim().split(/\s+/).filter(w => w.length > 0);
+            document.getElementById('reason-word-count').innerText = words.length;
+        }
+
+        async function submitVerificationRequest() {
+            const reason = document.getElementById('verification-reason').value.trim();
+            const words = reason.split(/\s+/).filter(w => w.length > 0).length;
+
+            if (words < 20 || words > 200) {
+                alert("Алдаа: Таны бичсэн тайлбар 20-оос 200 үгний хооронд байх ёстой!");
+                return;
+            }
+
+            const { error } = await supabaseClient.from('verification_requests').insert([{
+                user_id: sessionUser.id,
+                username: userProfile.username,
+                reason: reason,
+                status: 'pending'
+            }]);
+
+            if (error) {
+                alert("Хүсэлт илгээхэд алдаа гарлаа: " + error.message);
+            } else {
+                alert("Хүсэлтийг амжилттай илгээлээ. Админ удахгүй хянаж шийдвэрлэнэ!");
+                document.getElementById('verification-reason').value = '';
+                document.getElementById('reason-word-count').innerText = '0';
+            }
+        }
+
         function loadProfileData() {
             document.getElementById('stat-username').innerText = `@${userProfile.username}`;
             document.getElementById('stat-uid').innerText = `#${userProfile.uid}`;
@@ -222,8 +232,6 @@
             document.getElementById('bg-type').value = userProfile.bg_type || 'color';
             document.getElementById('bg-blur').value = userProfile.bg_blur || 10;
             document.getElementById('bg-opacity').value = userProfile.bg_opacity || 0.6;
-            document.getElementById('font-family').value = userProfile.font_family || 'Segoe UI';
-            document.getElementById('custom-cursor').value = userProfile.custom_cursor || '';
             
             document.getElementById('bg-url-input').value = userProfile.background_url || '';
             document.getElementById('music-url-input').value = userProfile.music_url || '';
@@ -233,18 +241,14 @@
             document.getElementById('link-tiktok').value = socials.tiktok || '';
             document.getElementById('link-instagram').value = socials.instagram || '';
             document.getElementById('link-github').value = socials.github || '';
-            document.getElementById('link-youtube').value = socials.youtube || '';
-            document.getElementById('link-steam').value = socials.steam || '';
             document.getElementById('link-discord').value = socials.discord || '';
 
             myCustomLinks = userProfile.custom_links || [];
-            
-            renderCustomLinks();
-            toggleBgInputs();
 
             if (userProfile.is_admin === true || userProfile.username === 'devnmd') {
                 document.getElementById('admin-menu-btn').style.display = 'flex';
                 loadAdminPanel();
+                loadVerificationRequests();
             }
 
             updateLivePreview();
@@ -271,41 +275,6 @@
             } else {
                 avatarPreview.style.display = 'none';
             }
-
-            const previewLinksContainer = document.getElementById('preview-links');
-            previewLinksContainer.innerHTML = '';
-
-            const socials = ['tiktok', 'instagram', 'github', 'youtube', 'steam', 'discord'];
-            socials.forEach(plat => {
-                const val = document.getElementById(`link-${plat}`).value.trim();
-                if (val) {
-                    const div = document.createElement('div');
-                    div.style.cssText = "background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; font-size:11px; text-align:center; color:#fff; border:1px solid rgba(138,43,226,0.2);";
-                    div.innerText = plat.toUpperCase();
-                    previewLinksContainer.appendChild(div);
-                }
-            });
-
-            myCustomLinks.forEach(link => {
-                if (link.title) {
-                    const div = document.createElement('div');
-                    div.style.cssText = "background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; font-size:11px; text-align:center; color:#fff; border:1px solid rgba(138,43,226,0.2);";
-                    div.innerText = link.title.toUpperCase();
-                    previewLinksContainer.appendChild(div);
-                }
-            });
-        }
-
-        function previewSelectedAvatar(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const livePreview = document.getElementById('preview-avatar');
-                    livePreview.src = e.target.result;
-                    livePreview.style.display = 'block';
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
         }
 
         function showTab(tabId) {
@@ -317,8 +286,6 @@
 
         function toggleBgInputs() {
             const type = document.getElementById('bg-type').value;
-            const uploadGroup = document.getElementById('file-upload-group');
-            uploadGroup.style.display = (type === 'image' || type === 'video') ? 'block' : 'none';
         }
 
         function checkCooldown() {
@@ -341,57 +308,18 @@
             if (!newUsername) return;
 
             const regex = /^[a-zA-Z0-9_-]+$/;
-            if (!regex.test(newUsername)) { alert("Зөвхөн англи үсэг, тоо."); return; }
+            if (!regex.test(newUsername) || newUsername.length < 3 || newUsername.length > 15) { 
+                alert("Алдаа: Хэрэглэгчийн нэр нь 3-15 урттай, англи үсэг болон тоо байх ёстой."); 
+                return; 
+            }
 
             const { error } = await supabaseClient.from('profiles').update({ username: newUsername, username_last_changed: new Date().toISOString() }).eq('id', sessionUser.id);
-            if (error) { alert("Алдаа: Бүртгэлтэй байна!"); } else { alert("Нэр солигдлоо!"); window.location.reload(); }
-        }
-
-        function renderCustomLinks() {
-            const list = document.getElementById('custom-links-list');
-            list.innerHTML = '';
-            myCustomLinks.forEach((link, idx) => {
-                const div = document.createElement('div');
-                div.className = 'custom-link-item';
-                div.innerHTML = `
-                    <div><strong>${link.title}</strong> - <span style="color:#00f0ff; font-size:12px;">${link.url}</span></div>
-                    <button onclick="removeCustomLink(${idx})" style="background:#ff0055; color:#fff; padding:5px 10px; font-size:12px;">Устгах</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function addCustomLink() {
-            const title = document.getElementById('custom-title').value.trim();
-            const url = document.getElementById('custom-url').value.trim();
-            if (!title || !url) return;
-
-            myCustomLinks.push({ title, url });
-            document.getElementById('custom-title').value = '';
-            document.getElementById('custom-url').value = '';
-            renderCustomLinks();
-            updateLivePreview();
-        }
-
-        function removeCustomLink(idx) {
-            myCustomLinks.splice(idx, 1);
-            renderCustomLinks();
-            updateLivePreview();
-        }
-
-        async function applyTemplate(theme) {
-            let config = {};
-            if (theme === 'cyberpunk') { config = { accent_color: '#00f0ff', text_color: '#ffffff', font_family: 'Segoe UI', bg_type: 'color', background_url: '' }; }
-            else if (theme === 'obsidian') { config = { accent_color: '#ffffff', text_color: '#a1a1b3', font_family: 'Courier New', bg_type: 'color', background_url: '' }; }
-            else if (theme === 'sakura') { config = { accent_color: '#ffb3d9', text_color: '#fff0f5', font_family: 'cursive', bg_type: 'color', background_url: '' }; }
-
-            const { error } = await supabaseClient.from('profiles').update(config).eq('id', sessionUser.id);
-            if (!error) { alert("Загвар амжилттай солигдлоо!"); window.location.reload(); }
+            if (error) { alert("Алдаа: Нэр бүртгэлтэй байна!"); } else { alert("Нэр солигдлоо!"); window.location.reload(); }
         }
 
         async function loadAdminPanel() {
             const tbody = document.getElementById('admin-user-rows');
-            tbody.innerHTML = 'Ачаалж байна...';
+            tbody.innerHTML = 'Уншиж байна...';
             const { data: users, error } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
 
             if (!error && users) {
@@ -399,8 +327,8 @@
                 users.forEach(user => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="font-weight:bold; color:#00f0ff;">@${user.username}</td>
-                        <td><input type="text" id="admin-name-${user.id}" class="admin-input-small" value="${user.name}" style="width:100px;"></td>
+                        <td style="font-weight:bold; color:#00f2fe;">@${user.username}</td>
+                        <td><input type="text" id="admin-name-${user.id}" class="admin-input-small" value="${user.name || ''}" style="width:100px;"></td>
                         <td><input type="number" id="admin-likes-${user.id}" class="admin-input-small" value="${user.likes_count || 0}"></td>
                         <td>
                             <select id="admin-badge-${user.id}" style="width:100px; padding:3px;">
@@ -413,11 +341,49 @@
                         <td><input type="checkbox" id="admin-ban-${user.id}" ${user.is_banned ? 'checked' : ''}></td>
                         <td>
                             <button onclick="saveUserAdmin('${user.id}')" style="padding:5px 10px; font-size:12px; background:#00ff66; color:#000;">Засах</button>
-                            ${user.music_url ? `<button onclick="resetUserMusic('${user.id}')" style="padding:5px 10px; font-size:12px; background:#ffaa00; color:#000; margin-left:5px;">Хөгжим устгах</button>` : ''}
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
+            }
+        }
+
+        async function loadVerificationRequests() {
+            const tbody = document.getElementById('admin-req-rows');
+            tbody.innerHTML = 'Уншиж байна...';
+            const { data: reqs, error } = await supabaseClient.from('verification_requests').select('*').eq('status', 'pending');
+
+            if (!error && reqs && reqs.length > 0) {
+                tbody.innerHTML = '';
+                reqs.forEach(req => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:bold; color:#00f2fe;">@${req.username}</td>
+                        <td style="max-width:300px; font-size:12px; white-space: normal;">${req.reason}</td>
+                        <td>
+                            <button onclick="resolveRequest('${req.id}', '${req.user_id}', 'Verified')" style="background:#00ff66; color:#000; padding:5px 10px; font-size:12px;">Зөвшөөрөх</button>
+                            <button onclick="resolveRequest('${req.id}', '${req.user_id}', 'Rejected')" style="background:#ff0055; color:#fff; padding:5px 10px; font-size:12px; margin-left:5px;">Татгалзах</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Одоогоор шинэ хүсэлт байхгүй байна.</td></tr>';
+            }
+        }
+
+        async function resolveRequest(reqId, userId, action) {
+            let badgeValue = action === 'Verified' ? 'Verified' : null;
+            
+            if (action === 'Verified') {
+                await supabaseClient.from('profiles').update({ badge: 'Verified' }).eq('id', userId);
+            }
+            
+            const { error } = await supabaseClient.from('verification_requests').update({ status: action.toLowerCase() }).eq('id', reqId);
+            if (!error) {
+                alert("Хүсэлтийг амжилттай шийдвэрлэлээ!");
+                loadVerificationRequests();
+                loadAdminPanel();
             }
         }
 
@@ -431,12 +397,6 @@
             if (!error) { alert("Засагдлаа!"); loadAdminPanel(); } else { alert("Алдаа: " + error.message); }
         }
 
-        async function resetUserMusic(userId) {
-            if (!confirm("Хөгжмийг устгах уу?")) return;
-            const { error } = await supabaseClient.from('profiles').update({ music_url: null }).eq('id', userId);
-            if (!error) { alert("Хөгжим устлаа!"); loadAdminPanel(); }
-        }
-
         async function saveAllSettings() {
             const status = document.getElementById('save-status');
             status.innerText = "Хадгалж байна...";
@@ -446,12 +406,6 @@
             const bgType = document.getElementById('bg-type').value;
             const bgBlur = document.getElementById('bg-blur').value;
             const bgOpacity = document.getElementById('bg-opacity').value;
-            const fontFamily = document.getElementById('font-family').value;
-            const customCursor = document.getElementById('custom-cursor').value.trim();
-
-            const bgFile = document.getElementById('bg-file').files[0];
-            const musicFile = document.getElementById('music-file').files[0];
-            const avatarFile = document.getElementById('avatar-file').files[0];
 
             let backgroundUrl = document.getElementById('bg-url-input').value.trim() || userProfile.background_url;
             let musicUrl = document.getElementById('music-url-input').value.trim() || userProfile.music_url;
@@ -461,41 +415,17 @@
                 tiktok: document.getElementById('link-tiktok').value.trim(),
                 instagram: document.getElementById('link-instagram').value.trim(),
                 github: document.getElementById('link-github').value.trim(),
-                youtube: document.getElementById('link-youtube').value.trim(),
-                steam: document.getElementById('link-steam').value.trim(),
                 discord: document.getElementById('link-discord').value.trim()
             };
 
             try {
-                if (avatarFile) {
-                    const ext = avatarFile.name.split('.').pop();
-                    const path = `${sessionUser.id}/avatar_${Date.now()}.${ext}`;
-                    await supabaseClient.storage.from('avatars').upload(path, avatarFile, { upsert: true });
-                    avatarUrl = supabaseClient.storage.from('avatars').getPublicUrl(path).data.publicUrl;
-                }
-
-                if (bgFile) {
-                    const ext = bgFile.name.split('.').pop();
-                    const path = `${sessionUser.id}/bg_${Date.now()}.${ext}`;
-                    await supabaseClient.storage.from('avatars').upload(path, bgFile, { upsert: true });
-                    backgroundUrl = supabaseClient.storage.from('avatars').getPublicUrl(path).data.publicUrl;
-                }
-
-                if (musicFile) {
-                    const ext = musicFile.name.split('.').pop();
-                    const path = `${sessionUser.id}/music_${Date.now()}.${ext}`;
-                    await supabaseClient.storage.from('avatars').upload(path, musicFile, { upsert: true });
-                    musicUrl = supabaseClient.storage.from('avatars').getPublicUrl(path).data.publicUrl;
-                }
-
                 const { error } = await supabaseClient.from('profiles').update({
                     name, bio, bg_type: bgType, bg_blur: bgBlur, bg_opacity: bgOpacity,
-                    font_family: fontFamily, custom_cursor: customCursor, socials,
-                    custom_links: myCustomLinks, background_url: backgroundUrl, music_url: musicUrl, avatar: avatarUrl
+                    socials, background_url: backgroundUrl, music_url: musicUrl, avatar: avatarUrl
                 }).eq('id', sessionUser.id);
 
                 if (error) throw error;
-                status.innerHTML = "<span style='color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.5); font-weight: bold;'>✔️ Мэдээлэл амжилттай хадгалагдлаа!</span>";
+                status.innerHTML = "<span style='color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.5); font-weight: bold;'>✔️ Мэдээлэл хадгалагдлаа!</span>";
                 setTimeout(() => window.location.reload(), 1000);
             } catch (err) { status.innerText = "Алдаа: " + err.message; }
         }
