@@ -1,22 +1,29 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Уншиж байна...</title>
-    <script type="text/javascript">
-      // Замын эхлэл ба төгсгөлийн налуу зураасыг арилгах
-      var path = window.location.pathname.replace(/^\/|\/$/g, '');
-      var segments = path.split('/');
-      var firstSegment = segments[0].toLowerCase();
-      
-      // Телепорт хийхгүйгээр шууд нэвтрэх системүүд
-      var bypass = ['register', 'settings', 'username'];
-      
-      if (bypass.indexOf(firstSegment) === -1 && path !== '') {
-          window.location.replace(window.location.origin + '/?u=' + path);
-      }
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <title>404 Олдоогүй | devnmd</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <p>Уншиж байна...</p>
+    <script>
+        const SUPABASE_URL = "https://jrzgxrptvirolfqhisqp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyemd4cnB0dmlyb2xmcWhpc3FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMjEwODEsImV4cCI6MjA5OTY5NzA4MX0.DSFIaJ8PnmXu3PA4Y9tBT5ibGIBtA5w6f7iHmCrf86M";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let path = window.location.pathname.replace(/^\/||\/$/g, "").toLowerCase();
+        if(path === "" || path === "settings" || path === "register" || path === "username") {
+            window.location.href = "/?u=" + path;
+        } else {
+            supabaseClient.from('profiles').select('username').eq('username', path).maybeSingle().then(({data, error}) => {
+                if(data) {
+                    window.location.href = "/?u=" + path;
+                } else {
+                    document.body.innerHTML = "<h1>404 Олдоогүй</h1><p>Энэ хэрэглэгч бүртгэлгүй байна.</p>";
+                }
+            });
+        }
     </script>
-  </head>
-  <body>
-  </body>
+</body>
 </html>

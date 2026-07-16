@@ -40,7 +40,7 @@ body {
     box-sizing: border-box;
 }
 
-/* 📱 LIVE PREVIEW (Шууд Харах утасны хэлбэртэй) */
+/* 📱 LIVE PREVIEW (Desktop-only real-time visual sandbox) */
 .preview-pane {
     width: 400px; background: #090912;
     border-left: 1px solid rgba(189, 0, 255, 0.15);
@@ -106,7 +106,7 @@ button:hover { background: #d033ff; transform: translateY(-2px); box-shadow: 0 0
     padding: 16px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
 }
 
-/* 👑 Админ Панелийн Хүснэгт */
+/* 👑 Admin Dashboard Table styling */
 .admin-table {
     width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px;
 }

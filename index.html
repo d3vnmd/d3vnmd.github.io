@@ -14,17 +14,20 @@
 
     <a href="/settings" id="settings-shortcut-btn">⚙️ Тохиргоо</a>
 
-    <!-- 🔊 Хөгжим тохируулах виджет -->
+    <!-- 🔊 Volume UI Widget (Top-left Spacing) -->
     <div id="music-widget" style="display: none;">
         <button class="music-btn" onclick="toggleMute()">
-            <svg id="volume-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <svg id="volume-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
         </button>
         <div class="volume-bar">
             <input type="range" id="volume-range" min="0" max="1" step="0.05" value="0.5" oninput="adjustVolume(this.value)">
         </div>
     </div>
 
-    <!-- 🔗 Шилжих холбоосыг баталгаажуулах цонх -->
+    <!-- 🔗 Domain Redirect Confirmation Modal (Screenshot 134057) -->
     <div class="confirm-modal-overlay" id="confirm-modal">
         <div class="confirm-card">
             <div class="confirm-title">
@@ -40,7 +43,7 @@
         </div>
     </div>
 
-    <!-- 👤 Зочид лайк дарах үед гарах цонх -->
+    <!-- 👤 Unregistered Guest Like Alert Modal -->
     <div class="confirm-modal-overlay" id="guest-modal">
         <div class="confirm-card" style="border-color:#ff0055; box-shadow: 0 0 40px rgba(255,0,85,0.25);">
             <div class="confirm-title" style="color:#ff0055;">
@@ -57,6 +60,7 @@
         </div>
     </div>
 
+    <!-- Click to Enter Overlay -->
     <div id="enter-overlay" style="display: none;" onclick="startBiolink()">
         [ Click to Enter ]
     </div>
@@ -78,7 +82,7 @@
 
         const pageContent = document.getElementById('page-content');
         let audioPlayer = null;
-        let isLiking = false;
+        let isLiking = false; // Debounce lock to prevent duplicate concurrent DB likes (Spam safety)
 
         const SVGBadges = {
             Verified: `<svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#00f0ff"/></svg>`,
@@ -101,7 +105,7 @@
                         </nav>
                         <header class="hero">
                             <h1>Хүссэн бүх зүйл тань, яг энд.</h1>
-                            <p>devnmd бол орчин үеийн, маш олон төрлийн үйлдэлтэй сошиал холбоосын нэрийн хуудас үүсгэх платформ юм.</p>
+                            <p>devnmd бол орчин үеийн, маш олон төрлийн үйлдэлтэй сошиал холбоосын нэрийн хуудас үүсгэх хамгийн шилдэг платформ юм.</p>
                             <div class="hero-btns">
                                 <a href="/register" class="nav-btn" style="padding: 15px 35px; font-size:16px;">Үнэгүй эхлэх</a>
                             </div>
@@ -217,7 +221,7 @@
                         if (value) {
                             let url = value;
                             if (platform === 'discord' && !value.startsWith('http')) {
-                                linksHTML += `<div class="link-btn-wrapper" onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID хуулагдлаа!');"><div class="link-btn">DISCORD ID</div></div>`;
+                                linksHTML += `<div class="link-btn-wrapper" onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID санах ойд хуулагдлаа!');"><div class="link-btn">DISCORD ID</div></div>`;
                                 continue;
                             }
                             if (platform === 'instagram' && !value.startsWith('http')) url = `https://instagram.com/${value}`;
@@ -301,7 +305,7 @@
                 const count = document.getElementById('like-count');
                 if (count) count.innerText = parseInt(count.innerText) + 1;
             }
-            setTimeout(() => { isLiking = false; }, 1000);
+            setTimeout(() => { isLiking = false; }, 1000); // 1-sec cooldown prevents dual DB click fires (spam safety)
         }
 
         function startBiolink() {
