@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Удирдлагын хэсэг | devnmd</title>
-    <!-- 🔗 Гадаад CSS файлаа холбов -->
     <link rel="stylesheet" href="settings.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -34,7 +33,7 @@
                 <div class="card">
                     <h3>Профайл Төлөв</h3>
                     <div class="group">
-                        <label>Нэр солих (7 хоногт нэг удаа)</label>
+                        <label>Нэр солих (7 хоногийн хязгаартай)</label>
                         <input type="text" id="new-username" placeholder="Шинэ нэр">
                         <span id="username-cooldown-timer" class="cooldown-text"></span>
                         <button style="margin-top:10px;" onclick="changeUsername()">Шинэчлэх</button>
@@ -48,9 +47,12 @@
                         <textarea id="profile-bio" rows="3" oninput="updateLivePreview()"></textarea>
                     </div>
                     <div class="group">
-                        <label>Профайл зураг (Аватар сонгох)</label>
+                        <label>Профайл зураг (Direct Link оруулах - Найдвартай)</label>
+                        <input type="text" id="profile-avatar-url" placeholder="https://example.com/image.png" oninput="updateLivePreview()">
+                    </div>
+                    <div class="group">
+                        <label>Эсвэл Профайл зураг сонгох (Файлаар)</label>
                         <input type="file" id="avatar-file" accept="image/*" onchange="previewSelectedAvatar(this)">
-                        <div style="margin-top:10px;"><img id="avatar-saved-preview" src="" style="width:50px; height:50px; border-radius:50%; display:none; border:1px solid #bd00ff;"></div>
                     </div>
                 </div>
             </div>
@@ -63,12 +65,16 @@
                         <label>Фон Төрөл</label>
                         <select id="bg-type" onchange="toggleBgInputs(); updateLivePreview();">
                             <option value="color">Дан өнгө</option>
-                            <option value="image">Зураг / GIF (Хуулах)</option>
-                            <option value="video">Бичлэг (Хуулах)</option>
+                            <option value="image">Зураг / GIF</option>
+                            <option value="video">Бичлэг / Видео</option>
                         </select>
                     </div>
+                    <div class="group" id="bg-url-group">
+                        <label>Арын фон линк (Direct Link - Санал болгох)</label>
+                        <input type="text" id="bg-url-input" placeholder="https://example.com/background.gif" oninput="updateLivePreview()">
+                    </div>
                     <div class="group" id="file-upload-group" style="display:none;">
-                        <label>Файл Сонгох (GIF, Зураг, Видео)</label>
+                        <label>Эсвэл Файл Сонгох (Файлаар)</label>
                         <input type="file" id="bg-file" accept="image/*,video/*">
                     </div>
                     <div class="group">
@@ -97,7 +103,11 @@
                         <input type="text" id="custom-cursor" placeholder="https://example.com/cursor.png">
                     </div>
                     <div class="group">
-                        <label>Арын Хөгжим оруулах (MP3 файл)</label>
+                        <label>Арын Хөгжим Линк (Direct MP3 Link)</label>
+                        <input type="text" id="music-url-input" placeholder="https://example.com/song.mp3">
+                    </div>
+                    <div class="group">
+                        <label>Эсвэл Хөгжмийн Файл Сонгох (MP3)</label>
                         <input type="file" id="music-file" accept="audio/*">
                     </div>
                 </div>
@@ -165,11 +175,11 @@
             <div class="status" id="save-status"></div>
         </div>
 
-        <!-- 📱 LIVE PREVIEW -->
+        <!-- 📱 LIVE PREVIEW PANE -->
         <div class="preview-pane">
-            <h3 style="color:#00f0ff; font-size:14px; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Live Preview (Шууд Харах)</h3>
+            <h3 style="color:#00f0ff; font-size:14px; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Live Preview</h3>
             <div class="preview-phone">
-                <div id="preview-avatar-box" style="width:70px; height:70px; border-radius:50%; background:#1c1a27; overflow:hidden; margin-bottom:15px;"><img id="preview-avatar" src="" style="width:100%; height:100%; object-fit:cover; display:none;"></div>
+                <div id="preview-avatar-box" style="width:70px; height:70px; border-radius:50%; background:#1c1a27; overflow:hidden; margin-bottom:15px; border: 2px solid #bd00ff;"><img id="preview-avatar" src="" style="width:100%; height:100%; object-fit:cover; display:none;"></div>
                 <div id="preview-name" style="font-weight:900; font-size:18px; margin-bottom:5px;">Нэр</div>
                 <div id="preview-username-text" style="font-size:11px; color:#bd00ff; margin-bottom:15px;">@username</div>
                 <div id="preview-bio" style="font-size:12px; color:#8a8a9e; text-align:center; max-width:80%; line-height:1.4; margin-bottom:20px;">Танилцуулга...</div>
@@ -214,12 +224,10 @@
             document.getElementById('bg-opacity').value = userProfile.bg_opacity || 0.6;
             document.getElementById('font-family').value = userProfile.font_family || 'Segoe UI';
             document.getElementById('custom-cursor').value = userProfile.custom_cursor || '';
-
-            if (userProfile.avatar) {
-                const img = document.getElementById('avatar-saved-preview');
-                img.src = userProfile.avatar;
-                img.style.display = 'block';
-            }
+            
+            document.getElementById('bg-url-input').value = userProfile.background_url || '';
+            document.getElementById('music-url-input').value = userProfile.music_url || '';
+            document.getElementById('profile-avatar-url').value = userProfile.avatar || '';
 
             const socials = userProfile.socials || {};
             document.getElementById('link-tiktok').value = socials.tiktok || '';
@@ -252,9 +260,16 @@
             document.getElementById('preview-bio').innerText = bio;
 
             const avatarPreview = document.getElementById('preview-avatar');
-            if (userProfile && userProfile.avatar) {
+            const avatarUrlInput = document.getElementById('profile-avatar-url').value.trim();
+
+            if (avatarUrlInput) {
+                avatarPreview.src = avatarUrlInput;
+                avatarPreview.style.display = 'block';
+            } else if (userProfile && userProfile.avatar) {
                 avatarPreview.src = userProfile.avatar;
                 avatarPreview.style.display = 'block';
+            } else {
+                avatarPreview.style.display = 'none';
             }
 
             const previewLinksContainer = document.getElementById('preview-links');
@@ -285,10 +300,7 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const savedPreview = document.getElementById('avatar-saved-preview');
                     const livePreview = document.getElementById('preview-avatar');
-                    savedPreview.src = e.target.result;
-                    savedPreview.style.display = 'block';
                     livePreview.src = e.target.result;
                     livePreview.style.display = 'block';
                 }
@@ -441,6 +453,10 @@
             const musicFile = document.getElementById('music-file').files[0];
             const avatarFile = document.getElementById('avatar-file').files[0];
 
+            let backgroundUrl = document.getElementById('bg-url-input').value.trim() || userProfile.background_url;
+            let musicUrl = document.getElementById('music-url-input').value.trim() || userProfile.music_url;
+            let avatarUrl = document.getElementById('profile-avatar-url').value.trim() || userProfile.avatar;
+
             const socials = {
                 tiktok: document.getElementById('link-tiktok').value.trim(),
                 instagram: document.getElementById('link-instagram').value.trim(),
@@ -449,10 +465,6 @@
                 steam: document.getElementById('link-steam').value.trim(),
                 discord: document.getElementById('link-discord').value.trim()
             };
-
-            let backgroundUrl = userProfile.background_url;
-            let musicUrl = userProfile.music_url;
-            let avatarUrl = userProfile.avatar;
 
             try {
                 if (avatarFile) {
@@ -483,7 +495,7 @@
                 }).eq('id', sessionUser.id);
 
                 if (error) throw error;
-                status.innerText = "Амжилттай хадгалагдлаа!";
+                status.innerHTML = "<span style='color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.5); font-weight: bold;'>✔️ Мэдээлэл амжилттай хадгалагдлаа!</span>";
                 setTimeout(() => window.location.reload(), 1000);
             } catch (err) { status.innerText = "Алдаа: " + err.message; }
         }
