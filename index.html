@@ -9,6 +9,8 @@
 </head>
 <body>
 
+    <canvas id="particle-canvas"></canvas>
+    <div id="cursor-glow"></div>
     <div id="bg-container"></div>
     <video id="bg-video" autoplay loop muted playsinline style="display:none;"></video>
 
@@ -197,7 +199,7 @@
                         </header>
 
                         <!-- Pricing Perks & Features Grid -->
-                        <section class="pricing-section" id="pricing">
+                        <section class="pricing-section reveal-on-scroll" id="pricing">
                             <h2>${t.pricing_title}</h2>
                             <div class="pricing-grid">
                                 <div class="price-card">
@@ -227,12 +229,12 @@
                             </div>
                         </section>
 
-                        <section class="stats-section">
+                        <section class="stats-section reveal-on-scroll">
                             <div class="stat-card"><h3>${t.total_users}</h3><p id="total-users">0</p></div>
                             <div class="stat-card"><h3>${t.total_likes}</h3><p id="total-likes">0</p></div>
                         </section>
 
-                        <section class="leaderboard-section" id="leaderboard">
+                        <section class="leaderboard-section reveal-on-scroll" id="leaderboard">
                             <h2>${t.leaderboard}</h2>
                             <div class="table-container">
                                 <table>
@@ -346,12 +348,13 @@
                     }
 
                     let linksHTML = '';
+                    let linkIdx = 0;
                     const socials = user.socials || {};
                     for (const [platform, value] of Object.entries(socials)) {
                         if (value) {
                             let url = value;
                             if (platform === 'discord' && !value.startsWith('http')) {
-                                linksHTML += `<div class="link-btn-wrapper" onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID Copied!');"><div class="link-btn">DISCORD ID</div></div>`;
+                                linksHTML += `<div class="link-btn-wrapper" style="--i:${linkIdx++}" onclick="navigator.clipboard.writeText('${value}'); alert('Discord ID Copied!');"><div class="link-btn">DISCORD ID</div></div>`;
                                 continue;
                             }
                             if (platform === 'instagram' && !value.startsWith('http')) url = `https://instagram.com/${value}`;
@@ -360,7 +363,7 @@
                             if (platform === 'steam' && !value.startsWith('http')) url = `https://steamcommunity.com/id/${value}`;
                             if (platform === 'tiktok' && !value.startsWith('http')) url = `https://tiktok.com/@${value}`;
 
-                            linksHTML += `<div class="link-btn-wrapper" onclick="triggerConfirmModal('${url}')"><div class="link-btn">${platform.toUpperCase()}</div></div>`;
+                            linksHTML += `<div class="link-btn-wrapper" style="--i:${linkIdx++}" onclick="triggerConfirmModal('${url}')"><div class="link-btn">${platform.toUpperCase()}</div></div>`;
                         }
                     }
 
@@ -368,7 +371,7 @@
                     customLinks.forEach(link => {
                         if (link.title && link.url) {
                             const target = link.url.startsWith('http') ? link.url : 'https://' + link.url;
-                            linksHTML += `<div class="link-btn-wrapper" onclick="triggerConfirmModal('${target}')"><div class="link-btn">${link.title}</div></div>`;
+                            linksHTML += `<div class="link-btn-wrapper" style="--i:${linkIdx++}" onclick="triggerConfirmModal('${target}')"><div class="link-btn">${link.title}</div></div>`;
                         }
                     });
 
@@ -378,7 +381,7 @@
                                 <img src="${user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + username}" class="avatar">
                                 <div class="name glitch" data-text="${user.name}">${user.name} ${badgeHTML}</div>
                                 <div class="username">@${username}</div>
-                                <div class="bio">${user.bio || ''}</div>
+                                <div class="bio" id="bio-text"></div>
                                 <div class="links-container">${linksHTML || '<p style="color:#444;">No links.</p>'}</div>
                                 <button class="like-btn" onclick="handleLike(event)">❤️ Like: <span id="like-count">${user.likes_count || 0}</span></button>
                             </div>
@@ -386,6 +389,7 @@
                     `;
 
                     init3DTilt();
+                    typewriterEffect('bio-text', user.bio || '');
                 } else {
                     // Хэрэв хэрэглэгч олдохгүй бол энэ нэрээр бүртгүүлж авах уу гэсэн өвөрмөц 404 хуудас ажиллана.
                     window.location.href = `/404.html?claim=${username}`;
@@ -464,7 +468,109 @@
             });
         }
 
+        // ⌨️ Bio текстийг үсэг үсгээр бичих Typewriter эффект
+        function typewriterEffect(elId, text) {
+            const el = document.getElementById(elId);
+            if (!el || !text) return;
+            let i = 0;
+            el.innerHTML = '';
+            const cursor = document.createElement('span');
+            cursor.className = 'typewriter-cursor';
+            cursor.style.height = '1em';
+            function type() {
+                if (i <= text.length) {
+                    el.textContent = text.slice(0, i);
+                    el.appendChild(cursor);
+                    i++;
+                    setTimeout(type, 28);
+                } else {
+                    setTimeout(() => cursor.remove(), 1200);
+                }
+            }
+            type();
+        }
+
+        // ✨ Хөвж буй гэрэлт бөөмс (Particle background) — canvas дээр хөнгөн, performance-friendly
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const isMobile = window.innerWidth < 768;
+            const count = isMobile ? 35 : 80;
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const colors = ['rgba(0,242,254,', 'rgba(155,81,224,'];
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 1.8 + 0.4,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.25,
+                    a: Math.random() * 0.5 + 0.15,
+                    c: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+
+            function tick() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.c + p.a + ')';
+                    ctx.fill();
+                });
+                requestAnimationFrame(tick);
+            }
+            tick();
+        }
+
+        // 🖱️ Хулганыг дагах зөөлөн гэрэл (Cursor glow)
+        function initCursorGlow() {
+            const glow = document.getElementById('cursor-glow');
+            if (!glow || 'ontouchstart' in window) return;
+            let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+            let cx = mx, cy = my;
+            document.addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; });
+            function follow() {
+                cx += (mx - cx) * 0.09;
+                cy += (my - cy) * 0.09;
+                glow.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+                requestAnimationFrame(follow);
+            }
+            follow();
+        }
+
+        // 👁️ Landing page секцүүдийг scroll хийхэд гарган харуулах
+        function initScrollReveal() {
+            const els = document.querySelectorAll('.reveal-on-scroll');
+            if (!els.length) return;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            els.forEach(el => observer.observe(el));
+        }
+
+        initParticles();
+        initCursorGlow();
         init();
+        // init() landing HTML-ийг innerHTML-ээр шингээдэг тул scroll-reveal-г дараа нь жаахан хугацаа өгч холбоно
+        setTimeout(initScrollReveal, 150);
     </script>
 </body>
 </html>
